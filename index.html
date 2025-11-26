@@ -1,345 +1,312 @@
-
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <title>三步网页互动体验 Demo</title>
+  <title>Interactive Web Game</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <style>
-    /* ======== 基础样式 ======== */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
     body {
+      margin: 0;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background: #111;
       color: #f5f5f5;
       display: flex;
+      min-height: 100vh;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
     }
-    .container {
+
+    .app-container {
       width: 100%;
       max-width: 900px;
-      padding: 16px;
-    }
-    h2 {
-      font-size: 20px;
-      margin-bottom: 10px;
+      padding: 20px;
+      box-sizing: border-box;
     }
 
-    /* 步骤容器的显示/隐藏 */
-    .step {
-      display: none;
-    }
-    .step.active {
-      display: block;
+    .step { display: none; }
+    .step.active { display: block; }
+
+    .video-wrapper {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+      border-radius: 12px;
+      border: 1px solid #333;
     }
 
-    /* 视频样式 */
-    video {
+    .video-wrapper iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
-      max-height: 70vh;
-      background: #000;
-      border-radius: 10px;
+      height: 100%;
     }
 
-    /* ======== Step1：问题与选项 ======== */
-    .question-block {
+    .btn {
+      display: inline-block;
       margin-top: 16px;
-      padding: 16px;
-      background: #222;
-      border-radius: 10px;
-    }
-    .question-title {
-      margin-bottom: 12px;
-      font-size: 18px;
-      line-height: 1.4;
-    }
-    .options {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-top: 8px;
-    }
-
-    button {
-      padding: 10px 14px;
-      border-radius: 8px;
+      padding: 10px 20px;
+      border-radius: 999px;
       border: none;
       cursor: pointer;
-      font-size: 15px;
-    }
-    .btn-option {
-      background: #333;
-      color: #f5f5f5;
-      text-align: left;
-    }
-    .btn-option:hover {
-      background: #444;
-    }
-    .btn-primary {
-      background: #5c7cfa;
-      color: #fff;
-      margin-top: 12px;
-    }
-    .btn-primary:active {
-      transform: scale(0.98);
+      background: #f5f5f5;
+      color: #111;
+      font-size: 14px;
+      font-weight: 600;
     }
 
-    .feedback {
-      margin-top: 10px;
-      padding-top: 8px;
-      border-top: 1px solid #444;
+    .btn[disabled] {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .quiz-options { margin: 16px 0; }
+    .quiz-option { margin: 6px 0; }
+
+    .message {
+      margin-top: 8px;
+      min-height: 20px;
+      font-size: 14px;
+    }
+
+    .message.correct { color: #66ff99; }
+    .message.wrong { color: #ff6666; }
+
+    .image-hotspot-container {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    .image-wrapper {
+      position: relative;
+      flex: 1 1 300px;
+      max-width: 500px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #333;
+    }
+
+    .image-wrapper img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .hotspot {
+      position: absolute;
+      border-radius: 999px;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px dashed rgba(255, 255, 255, 0.3);
+    }
+    .hotspot:hover { background: rgba(255, 255, 255, 0.15); }
+
+    .hotspot-info {
+      flex: 1 1 200px;
+      min-width: 220px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: 1px solid #333;
+      background: #181818;
       font-size: 14px;
       line-height: 1.5;
     }
-    .feedback.correct {
-      color: #8ce99a;
-    }
-    .feedback.wrong {
-      color: #ffa8a8;
-    }
 
-    .hint {
-      margin-top: 8px;
-      font-size: 13px;
-      color: #aaa;
-    }
-
-    /* ======== Step3：场景互动 ======== */
-    .scene-wrapper {
-      position: relative;
-      width: 100%;
-      max-width: 900px;
-      margin: 0 auto;
-    }
-    .scene-image {
-      width: 100%;
-      display: block;
-      border-radius: 10px;
-      background: #000;
-    }
-    /* 热点区域：用绝对定位覆盖在图片上 */
-    .hotspot {
-      position: absolute;
-      border-radius: 8px;
-      border: 2px dashed rgba(255, 255, 255, 0.35);
-      background: rgba(255, 255, 255, 0.05);
-      cursor: pointer;
-      transition: transform 0.1s ease;
-    }
-    .hotspot:hover {
-      transform: scale(1.02);
-    }
-    .hotspot:active {
-      transform: scale(0.97);
-    }
-
-    .info-panel {
-      margin-top: 14px;
-      padding: 12px;
-      background: #222;
-      border-radius: 10px;
-      min-height: 60px;
-      font-size: 14px;
-      line-height: 1.6;
-    }
-    .info-title {
-      font-weight: bold;
+    .hotspot-info-title {
+      font-weight: 600;
       margin-bottom: 6px;
       font-size: 15px;
+    }
+
+    .step-indicator {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #aaa;
+      margin-bottom: 8px;
     }
   </style>
 </head>
 <body>
-  <div class="container">
+<div class="app-container">
 
-    <!-- ========== STEP 1：视频1 + 问题 ========== -->
-    <section id="step1" class="step active">
-      <h2>步骤一 · 动画 + 问题</h2>
+  <!-- Step 1: 视频 1 -->
+  <section id="step1" class="step active">
+    <div class="step-indicator">Step 1 / 4</div>
+    <h2>Video 1</h2>
+    <p>Please watch the video. After it finishes, it will automatically move to the next step.</p>
 
-      <!-- TODO: 替换为你的第一个视频文件名 -->
-      <video id="video1" controls playsinline>
-        <source src="video1.mp4" type="video/mp4" />
-        你的浏览器不支持视频标签。
-      </video>
+    <div class="video-wrapper">
+      <div id="player1"></div>
+    </div>
+  </section>
 
-      <!-- 问题区域：视频1结束后显示 -->
-      <div id="questionBlock" class="question-block" style="display:none;">
-        <div class="question-title">
-          <!-- TODO: 修改问题文本 -->
-          问题：刚才的动画中，实验失败的主要原因是什么？
+  <!-- Step 2: 选择题 -->
+  <section id="step2" class="step">
+    <div class="step-indicator">Step 2 / 4</div>
+    <h2>Quiz</h2>
+    <p>Please answer the question based on the video.</p>
+
+    <h3>Where are the fire extinguishers?</h3>
+
+    <div class="quiz-options">
+      <label class="quiz-option">
+        <input type="radio" name="quiz" value="A" />
+        A. Catering stalls
+      </label>
+      <label class="quiz-option">
+        <input type="radio" name="quiz" value="B" />
+        B. Info tent
+      </label>
+      <label class="quiz-option">
+        <input type="radio" name="quiz" value="C" />
+        C. Market stalls
+      </label>
+    </div>
+
+    <button class="btn" id="checkAnswerBtn">Check Answer</button>
+    <button class="btn" id="quizNextBtn" disabled>Next ▶</button>
+
+    <div class="message" id="quizMessage"></div>
+  </section>
+
+  <!-- Step 3: 视频 2 -->
+  <section id="step3" class="step">
+    <div class="step-indicator">Step 3 / 4</div>
+    <h2>Video 2</h2>
+    <p>Please watch the second video. After it finishes, it will move to the final step.</p>
+
+    <div class="video-wrapper">
+      <div id="player2"></div>
+    </div>
+  </section>
+
+  <!-- Step 4: 热点交互 -->
+  <section id="step4" class="step">
+    <div class="step-indicator">Step 4 / 4</div>
+    <h2>Interactive Image</h2>
+    <p>Click on items in the image to learn more.</p>
+
+    <div class="image-hotspot-container">
+      <div class="image-wrapper">
+        <!-- TODO：把图片换成你的 -->
+        <img src="your-image.jpg" alt="Scene" />
+
+        <!-- 示例热点：水瓶 -->
+        <div class="hotspot"
+             data-title="Water Bottle"
+             data-description="A water bottle is essential for hydration during outdoor activities."
+             style="top: 60%; left: 55%; width: 12%; height: 20%;">
         </div>
 
-        <div class="options">
-          <!-- data-correct="true" 表示该选项为正确答案 -->
-          <button class="btn-option" data-option="A" data-correct="false">
-            A. 操作人员忘记戴手套
-          </button>
-          <button class="btn-option" data-option="B" data-correct="true">
-            B. 瓶子没有在规定时间内关闭阀门
-          </button>
-          <button class="btn-option" data-option="C" data-correct="false">
-            C. 实验室的灯光太暗
-          </button>
+        <!-- 示例热点：Notebook -->
+        <div class="hotspot"
+             data-title="Notebook"
+             data-description="Used to record important information and notes."
+             style="top: 40%; left: 25%; width: 18%; height: 20%;">
         </div>
 
-        <div id="feedback" class="feedback"></div>
-
-        <button id="btnContinueStep2" class="btn-primary" style="display:none;">
-          继续，进入下一段动画
-        </button>
       </div>
 
-      <p class="hint">提示：视频播放结束后会自动出现问题。</p>
-    </section>
-
-    <!-- ========== STEP 2：视频2，无交互 ========== -->
-    <section id="step2" class="step">
-      <h2>步骤二 · 过场动画</h2>
-
-      <!-- TODO: 替换为你的第二个视频文件名 -->
-      <video id="video2" controls playsinline>
-        <source src="video2.mp4" type="video/mp4" />
-        你的浏览器不支持视频标签。
-      </video>
-
-      <p class="hint">本段没有交互，播放结束后会自动进入下一步。</p>
-    </section>
-
-    <!-- ========== STEP 3：场景点击互动 ========== -->
-    <section id="step3" class="step">
-      <h2>步骤三 · 场景点击互动</h2>
-
-      <div class="scene-wrapper">
-        <!-- TODO: 替换为你的场景图片 -->
-        <img
-          src="scene.jpg"
-          alt="实验室场景"
-          class="scene-image"
-          id="sceneImage"
-        />
-
-        <!-- 示例热点1：药剂瓶 -->
-        <!-- 这些坐标和大小（left/top/width/height）需要根据你的图片进行微调 -->
-        <div
-          class="hotspot"
-          data-title="药剂瓶"
-          data-text="这是实验中使用的主要药剂瓶，需要在规定时间内关闭阀门，否则会导致泄露。"
-          style="left: 20%; top: 55%; width: 12%; height: 18%;"
-        ></div>
-
-        <!-- 示例热点2：控制面板 -->
-        <div
-          class="hotspot"
-          data-title="控制面板"
-          data-text="用于调节实验参数，任何参数变更需要双人确认记录。"
-          style="left: 60%; top: 40%; width: 18%; height: 20%;"
-        ></div>
-
-        <!-- 示例热点3：紧急停止按钮 -->
-        <div
-          class="hotspot"
-          data-title="紧急停止按钮"
-          data-text="在紧急情况下，可以按下此按钮立即切断电源并停止实验。"
-          style="left: 80%; top: 70%; width: 10%; height: 15%;"
-        ></div>
+      <div class="hotspot-info" id="hotspotInfo">
+        <div class="hotspot-info-title">Hint</div>
+        <div>Click the highlighted areas in the image to view explanations.</div>
       </div>
+    </div>
+  </section>
 
-      <div id="infoPanel" class="info-panel">
-        <div class="info-title">请点击场景中的元素进行探索</div>
-        <div id="infoText">例如：点击瓶子、控制面板或紧急按钮，会显示对应说明。</div>
-      </div>
-    </section>
+</div>
 
-  </div>
+<!-- YouTube API -->
+<script src="https://www.youtube.com/iframe_api"></script>
 
-  <script>
-    /* ======== 公用：步骤切换函数 ======== */
-    function showStep(stepId) {
-      document.querySelectorAll('.step').forEach((step) => {
-        step.classList.remove('active');
-      });
-      document.getElementById(stepId).classList.add('active');
+<script>
+  let player1, player2;
+
+  const VIDEO_1_ID = "_ui398aLpIA";    // 你的第一个 shorts
+  const VIDEO_2_ID = "TAoYnAJLXoQ";    // 第二个 shorts
+
+  const CORRECT_ANSWER = "A";
+
+  function showStep(step) {
+    document.querySelectorAll(".step").forEach((el, i) => {
+      el.classList.toggle("active", i === step - 1);
+    });
+  }
+
+  function onYouTubeIframeAPIReady() {
+    player1 = new YT.Player("player1", {
+      videoId: VIDEO_1_ID,
+      playerVars: { autoplay: 1, controls: 1, rel: 0 },
+      events: { onStateChange: onPlayer1Done }
+    });
+
+    player2 = new YT.Player("player2", {
+      videoId: VIDEO_2_ID,
+      playerVars: { autoplay: 0, controls: 1, rel: 0 },
+      events: { onStateChange: onPlayer2Done }
+    });
+  }
+
+  function onPlayer1Done(event) {
+    if (event.data === YT.PlayerState.ENDED) {
+      showStep(2);
+    }
+  }
+
+  function onPlayer2Done(event) {
+    if (event.data === YT.PlayerState.ENDED) {
+      showStep(4);
+    }
+  }
+
+  // Quiz logic
+  const msg = document.getElementById("quizMessage");
+  const nextBtn = document.getElementById("quizNextBtn");
+
+  document.getElementById("checkAnswerBtn").addEventListener("click", () => {
+    const selected = document.querySelector('input[name="quiz"]:checked');
+
+    if (!selected) {
+      msg.textContent = "Please select an option.";
+      msg.className = "message wrong";
+      return;
     }
 
-    /* ======== STEP 1：视频1 + 问答逻辑 ======== */
-    const video1 = document.getElementById('video1');
-    const questionBlock = document.getElementById('questionBlock');
-    const feedback = document.getElementById('feedback');
-    const btnContinueStep2 = document.getElementById('btnContinueStep2');
+    if (selected.value === CORRECT_ANSWER) {
+      msg.textContent = "Correct! Click Next to continue.";
+      msg.className = "message correct";
+      nextBtn.disabled = false;
+    } else {
+      msg.textContent = "Wrong answer. Try again!";
+      msg.className = "message wrong";
+      nextBtn.disabled = true;
+    }
+  });
 
-    // 视频1播放完毕后显示问题区域
-    video1.addEventListener('ended', () => {
-      questionBlock.style.display = 'block';
-    });
+  nextBtn.addEventListener("click", () => {
+    showStep(3);
+    player2.playVideo();
+  });
 
-    // 监听所有选项的点击
-    document.querySelectorAll('.btn-option').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const isCorrect = btn.dataset.correct === 'true';
-        const optionKey = btn.dataset.option;
+  // Hotspots
+  document.addEventListener("click", (event) => {
+    const hotspot = event.target.closest(".hotspot");
+    if (!hotspot) return;
 
-        if (isCorrect) {
-          // 答对
-          feedback.className = 'feedback correct';
-          feedback.innerHTML =
-            '回答正确！B 选项是正确原因：瓶子没有在规定时间内关闭阀门，导致了泄露风险。';
-        } else {
-          // 答错，自定义不同选项的错误提示
-          feedback.className = 'feedback wrong';
-          let wrongReason = '';
-          if (optionKey === 'A') {
-            wrongReason =
-              '你选择了 A：忘记戴手套确实是安全隐患，但在刚才的动画中，真正导致事故的是阀门没有及时关闭。';
-          } else if (optionKey === 'C') {
-            wrongReason =
-              '你选择了 C：灯光太暗会影响观察，但动画中并没有表现这是事故的直接原因。';
-          }
+    const title = hotspot.dataset.title;
+    const desc = hotspot.dataset.description;
 
-          feedback.innerHTML =
-            wrongReason +
-            '<br /><br />正确答案是 <b>B</b>：瓶子没有在规定时间内关闭阀门，导致药剂泄露。';
-        }
+    document.getElementById("hotspotInfo").innerHTML = `
+      <div class="hotspot-info-title">${title}</div>
+      <div>${desc}</div>
+    `;
+  });
+</script>
 
-        // 不论对错，只要回答过，就可以继续到下一步
-        btnContinueStep2.style.display = 'inline-block';
-      });
-    });
-
-    // 点击“继续”按钮 → 切换到步骤二，并尝试自动播放视频2
-    const video2 = document.getElementById('video2');
-
-    btnContinueStep2.addEventListener('click', () => {
-      showStep('step2');
-      // 由于按钮点击属于用户交互，一般浏览器允许自动播放
-      video2.play().catch(() => {
-        // 如果被浏览器拦截，就保持有controls，让用户手动点播放
-        console.log('自动播放 video2 被阻止，用户需要手动点击播放。');
-      });
-    });
-
-    /* ======== STEP 2：视频2结束自动进 STEP 3 ======== */
-    video2.addEventListener('ended', () => {
-      showStep('step3');
-    });
-
-    /* ======== STEP 3：热点点击显示说明 ======== */
-    const infoPanel = document.getElementById('infoPanel');
-    const infoText = document.getElementById('infoText');
-
-    document.querySelectorAll('.hotspot').forEach((spot) => {
-      spot.addEventListener('click', () => {
-        const title = spot.dataset.title || '说明';
-        const text = spot.dataset.text || '';
-        infoPanel.querySelector('.info-title').textContent = title;
-        infoText.textContent = text;
-      });
-    });
-  </script>
 </body>
 </html>
