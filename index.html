@@ -27,6 +27,7 @@
     .step { display: none; }
     .step.active { display: block; }
 
+    /* 视频 */
     .video-wrapper {
       position: relative;
       padding-bottom: 56.25%;
@@ -44,6 +45,7 @@
       height: 100%;
     }
 
+    /* 按钮 */
     .btn {
       display: inline-block;
       margin-top: 16px;
@@ -56,24 +58,82 @@
       font-size: 14px;
       font-weight: 600;
     }
-
     .btn[disabled] {
       opacity: 0.4;
       cursor: not-allowed;
     }
 
-    .quiz-options { margin: 16px 0; }
-    .quiz-option { margin: 6px 0; }
-
-    .message {
-      margin-top: 8px;
-      min-height: 20px;
-      font-size: 14px;
+    /* quiz */
+    .quiz-option {
+      margin: 6px 0;
+      display: block;
     }
 
-    .message.correct { color: #66ff99; }
-    .message.wrong { color: #ff6666; }
+    /* 卡片外观 */
+    .quiz-card {
+      background: #181818;
+      border-radius: 16px;
+      padding: 20px 22px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.45);
+      max-width: 620px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
 
+    /* 滑动效果 */
+    .slide-in-right {
+      animation: slideInRight 0.35s ease-out forwards;
+    }
+    .slide-out-left {
+      animation: slideOutLeft 0.35s ease-in forwards;
+    }
+
+    @keyframes slideInRight {
+      from { opacity:0; transform: translateX(40px); }
+      to   { opacity:1; transform: translateX(0); }
+    }
+    @keyframes slideOutLeft {
+      from { opacity:1; transform: translateX(0); }
+      to   { opacity:0; transform: translateX(-40px); }
+    }
+
+    /* 错误抖动 */
+    .quiz-card.shake {
+      animation: shake 0.4s ease;
+    }
+    @keyframes shake {
+      0%{transform:translateX(0);}
+      20%{transform:translateX(-6px);}
+      40%{transform:translateX(6px);}
+      60%{transform:translateX(-4px);}
+      80%{transform:translateX(4px);}
+      100%{transform:translateX(0);}
+    }
+
+    /* hotspot 区域（完全隐形） */
+    .hotspot {
+      position: absolute;
+      border-radius: 999px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+    }
+
+    /* 放大镜层 */
+    #magnifier {
+      position: absolute;
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      pointer-events: none;
+      border: 2px solid #fff;
+      box-shadow: 0 0 15px rgba(0,0,0,0.6);
+      display: none;
+      background-repeat: no-repeat;
+      overflow: hidden;
+      z-index: 5;
+    }
+
+    /* hotspot 区域布局 */
     .image-hotspot-container {
       display: flex;
       gap: 20px;
@@ -91,35 +151,12 @@
     }
 
     .image-wrapper img {
-      display: block;
       width: 100%;
       height: auto;
+      display: block;
     }
 
-    /* ⭐ 热点：完全隐形，只负责点击区域，不再做任何放大动画 */
-    .hotspot {
-      position: absolute;
-      border-radius: 999px;
-      cursor: pointer;
-      background: transparent;
-      border: none;
-    }
-
-    /* ⭐ 放大镜：单独一个圆形层，显示图片局部放大 */
-    #magnifier {
-      position: absolute;
-      width: 140px;          /* 放大镜直径，可改 */
-      height: 140px;
-      border-radius: 50%;
-      pointer-events: none;  /* 不挡住鼠标点击 */
-      border: 2px solid #fff;
-      box-shadow: 0 0 15px rgba(0,0,0,0.6);
-      display: none;         /* 初始不显示，点击热点后显示 */
-      background-repeat: no-repeat;
-      overflow: hidden;
-      z-index: 5;
-    }
-
+    /* hotspot 右侧信息区 */
     .hotspot-info {
       flex: 1 1 200px;
       min-width: 220px;
@@ -146,6 +183,7 @@
     }
   </style>
 </head>
+
 <body>
 <div class="app-container">
 
@@ -153,96 +191,87 @@
   <section id="step1" class="step active">
     <div class="step-indicator">Step 1 / 4</div>
     <h2>Video 1</h2>
-    <p>Please watch the video. After it finishes, it will automatically move to the next step.</p>
+    <p>Please watch the video.</p>
 
     <div class="video-wrapper">
       <div id="player1"></div>
     </div>
   </section>
 
-  <!-- Step 2 -->
+  <!-- Step 2：两题 Quiz 卡片 -->
   <section id="step2" class="step">
     <div class="step-indicator">Step 2 / 4</div>
     <h2>Quiz</h2>
-    <p>Please answer the question based on the video.</p>
 
-    <h3>Where are the fire extinguishers?</h3>
+    <!-- Q1 -->
+    <div id="cardQ1" class="quiz-card">
+      <h3>Where are the fire extinguishers?</h3>
 
-    <div class="quiz-options">
-      <label class="quiz-option">
-        <input type="radio" name="quiz" value="A" />
-        A. Catering stalls
-      </label>
-      <label class="quiz-option">
-        <input type="radio" name="quiz" value="B" />
-        B. Info tent
-      </label>
-      <label class="quiz-option">
-        <input type="radio" name="quiz" value="C" />
-        C. Market stalls
-      </label>
+      <label class="quiz-option"><input type="radio" name="quiz1" value="A"> A. Catering stalls</label>
+      <label class="quiz-option"><input type="radio" name="quiz1" value="B"> B. Info tent</label>
+      <label class="quiz-option"><input type="radio" name="quiz1" value="C"> C. Market stalls</label>
+
+      <button class="btn" id="checkQ1">Check Answer</button>
+      <div class="message" id="msgQ1"></div>
     </div>
 
-    <button class="btn" id="checkAnswerBtn">Check Answer</button>
-    <button class="btn" id="quizNextBtn" disabled>Next ▶</button>
+    <!-- Q2 -->
+    <div id="cardQ2" class="quiz-card" style="display:none; margin-top:30px;">
+      <h3>Which one is needed?</h3>
 
-    <div class="message" id="quizMessage"></div>
+      <label class="quiz-option"><input type="radio" name="quiz2" value="A"> Water</label>
+      <label class="quiz-option"><input type="radio" name="quiz2" value="B"> CO₂</label>
+      <label class="quiz-option"><input type="radio" name="quiz2" value="C"> Foam</label>
+
+      <button class="btn" id="checkQ2">Check Answer</button>
+      <button class="btn" id="quizNextBtn" disabled>Next ▶</button>
+      <div class="message" id="msgQ2"></div>
+    </div>
   </section>
 
   <!-- Step 3 -->
   <section id="step3" class="step">
     <div class="step-indicator">Step 3 / 4</div>
     <h2>Video 2</h2>
-    <p>Please watch the second video. After it finishes, it will move to the final step.</p>
-
-    <div class="video-wrapper">
-      <div id="player2"></div>
-    </div>
+    <div class="video-wrapper"><div id="player2"></div></div>
   </section>
 
   <!-- Step 4 -->
   <section id="step4" class="step">
     <div class="step-indicator">Step 4 / 4</div>
     <h2>Interactive Image</h2>
-    <p>Click on the people, the water bottle or the fire extinguisher to learn more.</p>
 
     <div class="image-hotspot-container">
       <div class="image-wrapper">
-        <img src="market-scene.png" alt="Market safety scene" />
+        <img src="market-scene.png" alt="Scene">
 
-        <!-- 你的热点区域（位置保持你调好的） -->
-        <div class="hotspot"
-             data-title="Info tent staff"
+        <div class="hotspot" data-title="Info tent staff"
              data-description="The info tent staff help visitors with directions, safety information and emergency procedures."
              style="top: 20%; left: 15%; width: 20%; height: 30%;"></div>
 
-        <div class="hotspot"
-             data-title="Market stall vendor"
-             data-description="The market stall vendor sells fresh produce and should also know where safety equipment is located."
+        <div class="hotspot" data-title="Market stall vendor"
+             data-description="The market stall vendor sells fresh produce."
              style="top: 18%; left: 60%; width: 20%; height: 28%;"></div>
 
-        <div class="hotspot"
-             data-title="Catering stall worker"
-             data-description="Catering stalls involve cooking and open flames, so having a fire extinguisher nearby is essential."
+        <div class="hotspot" data-title="Catering stall worker"
+             data-description="Catering stalls involve cooking and open flames."
              style="top: 59%; left: 73%; width: 11%; height: 28%;"></div>
 
-        <div class="hotspot"
-             data-title="Water bottle"
-             data-description="Staying hydrated is important for both staff and visitors, especially during outdoor events."
+        <div class="hotspot" data-title="Water bottle"
+             data-description="Staying hydrated is important."
              style="top: 48%; left: 45%; width: 10%; height: 28%;"></div>
 
-        <div class="hotspot"
-             data-title="Fire extinguisher"
-             data-description="Every catering stall should have a fire extinguisher. It must be easy to see and quick to reach."
+        <div class="hotspot" data-title="Fire extinguisher"
+             data-description="Every catering stall should have a fire extinguisher."
              style="top: 58%; left: 61%; width: 5%; height: 26%;"></div>
 
-        <!-- ⭐ 放大镜层 -->
+        <!-- 放大镜 -->
         <div id="magnifier"></div>
       </div>
 
       <div class="hotspot-info" id="hotspotInfo">
         <div class="hotspot-info-title">Hint</div>
-        <div>Click on the people, the water bottle or the fire extinguisher in the image to view more information.</div>
+        Click on the hotspots.
       </div>
     </div>
   </section>
@@ -253,117 +282,138 @@
 <script src="https://www.youtube.com/iframe_api"></script>
 
 <script>
-  let player1, player2;
+let player1, player2;
 
-  const VIDEO_1_ID = "_ui398aLpIA";
-  const VIDEO_2_ID = "TAoYnAJLXoQ";
-  const CORRECT_ANSWER = "A";
+// YouTube 视频 ID
+const VIDEO_1_ID = "_ui398aLpIA";
+const VIDEO_2_ID = "TAoYnAJLXoQ";
 
-  function showStep(step) {
-    document.querySelectorAll(".step").forEach((el, i) => {
-      el.classList.toggle("active", i === step - 1);
-    });
-  }
+function showStep(num){
+  document.querySelectorAll(".step").forEach((s,i)=>{
+    s.classList.toggle("active", i === num-1);
+  });
+}
 
-  function onYouTubeIframeAPIReady() {
-    player1 = new YT.Player("player1", {
-      videoId: VIDEO_1_ID,
-      playerVars: { autoplay: 1, controls: 1, rel: 0 },
-      events: { onStateChange: onPlayer1Done }
-    });
-
-    player2 = new YT.Player("player2", {
-      videoId: VIDEO_2_ID,
-      playerVars: { autoplay: 0, controls: 1, rel: 0 },
-      events: { onStateChange: onPlayer2Done }
-    });
-  }
-
-  function onPlayer1Done(event) {
-    if (event.data === YT.PlayerState.ENDED) {
-      showStep(2);
-    }
-  }
-
-  function onPlayer2Done(event) {
-    if (event.data === YT.PlayerState.ENDED) {
-      showStep(4);
-    }
-  }
-
-  // ⭐ 放大镜 + 热点点击逻辑
-  const hotspotInfo = document.getElementById("hotspotInfo");
-  const magnifier = document.getElementById("magnifier");
-  const image = document.querySelector("#step4 .image-wrapper img");
-
-  document.addEventListener("click", (event) => {
-    const hotspot = event.target.closest(".hotspot");
-    if (!hotspot) {
-      // 不点击热点时，不改变放大镜（你说要“一直显示”，所以这里不隐藏）
-      return;
-    }
-
-    // 1）更新文字信息
-    const title = hotspot.dataset.title;
-    const desc = hotspot.dataset.description;
-    hotspotInfo.innerHTML = `
-      <div class="hotspot-info-title">${title}</div>
-      <div>${desc}</div>
-    `;
-
-    // 2）图片放大镜逻辑
-    if (!image) return;
-
-    const rect = image.getBoundingClientRect();
-    const zoom = 2.2;       // 放大倍数，可以调大一点例如 3
-    const lensSize = 140;   // 直径，要和 CSS 里的宽高一致
-
-    const clickX = event.clientX - rect.left; // 相对图片的 x
-    const clickY = event.clientY - rect.top;  // 相对图片的 y
-
-    // 放大镜位置：让它中心对准点击点
-    magnifier.style.display = "block";
-    magnifier.style.left = (clickX - lensSize / 2) + "px";
-    magnifier.style.top = (clickY - lensSize / 2) + "px";
-
-    // 使用同一张图片作为背景，放大到 zoom 倍
-    magnifier.style.backgroundImage = `url(${image.src})`;
-    magnifier.style.backgroundSize = (rect.width * zoom) + "px " + (rect.height * zoom) + "px";
-
-    // 背景位置：确保点击的位置出现在放大镜中心
-    const bgPosX = -(clickX * zoom - lensSize / 2);
-    const bgPosY = -(clickY * zoom - lensSize / 2);
-    magnifier.style.backgroundPosition = `${bgPosX}px ${bgPosY}px`;
+function onYouTubeIframeAPIReady(){
+  player1 = new YT.Player("player1", {
+    videoId: VIDEO_1_ID,
+    events: { onStateChange: e => {
+      if(e.data === YT.PlayerState.ENDED) showStep(2);
+    }}
   });
 
-  // Quiz logic
-  const msg = document.getElementById("quizMessage");
-  const nextBtn = document.getElementById("quizNextBtn");
-
-  document.getElementById("checkAnswerBtn").addEventListener("click", () => {
-    const selected = document.querySelector('input[name="quiz"]:checked');
-
-    if (!selected) {
-      msg.textContent = "Please select an option.";
-      msg.className = "message wrong";
-      return;
-    }
-
-    if (selected.value === CORRECT_ANSWER) {
-      msg.textContent = "Correct! Click Next to continue.";
-      msg.className = "message correct";
-      nextBtn.disabled = false;
-    } else {
-      msg.textContent = "Wrong answer. Try again!";
-      msg.className = "message wrong";
-      nextBtn.disabled = true;
-    }
+  player2 = new YT.Player("player2", {
+    videoId: VIDEO_2_ID,
+    events: { onStateChange: e => {
+      if(e.data === YT.PlayerState.ENDED) showStep(4);
+    }}
   });
+}
 
-  nextBtn.addEventListener("click", () => {
-    showStep(3);
-    player2.playVideo();
-  });
+/* -------------------------
+    多题 Quiz：滑动 + 抖动
+--------------------------*/
+function shake(card){
+  card.classList.remove("shake");
+  void card.offsetWidth;
+  card.classList.add("shake");
+}
+
+const cardQ1 = document.getElementById("cardQ1");
+const cardQ2 = document.getElementById("cardQ2");
+
+document.getElementById("checkQ1").onclick = ()=>{
+  const s = document.querySelector('input[name="quiz1"]:checked');
+  const msg = document.getElementById("msgQ1");
+
+  if(!s){
+    msg.textContent = "Please select an option.";
+    msg.className = "message wrong";
+    shake(cardQ1);
+    return;
+  }
+
+  if(s.value==="A"){
+    msg.textContent = "Correct! Next question...";
+    msg.className = "message correct";
+
+    cardQ1.classList.add("slide-out-left");
+    setTimeout(()=>{
+      cardQ1.style.display="none";
+      cardQ2.style.display="block";
+      cardQ2.classList.add("slide-in-right");
+    },300);
+
+  } else {
+    msg.textContent = "Wrong. Try again!";
+    msg.className = "message wrong";
+    shake(cardQ1);
+  }
+};
+
+document.getElementById("checkQ2").onclick = ()=>{
+  const s = document.querySelector('input[name="quiz2"]:checked');
+  const msg = document.getElementById("msgQ2");
+  const next = document.getElementById("quizNextBtn");
+
+  if(!s){
+    msg.textContent="Please select an option.";
+    msg.className="message wrong";
+    shake(cardQ2);
+    return;
+  }
+
+  if(s.value==="A"){
+    msg.textContent="Correct! Click Next.";
+    msg.className="message correct";
+    next.disabled=false;
+  } else {
+    msg.textContent="Wrong. Try again!";
+    msg.className="message wrong";
+    next.disabled=true;
+    shake(cardQ2);
+  }
+};
+
+document.getElementById("quizNextBtn").onclick = ()=>{
+  showStep(3);
+  player2.playVideo();
+};
+
+/* -------------------------
+   放大镜 + hotspot
+--------------------------*/
+const image = document.querySelector("#step4 img");
+const magnifier = document.getElementById("magnifier");
+const hotspotInfo = document.getElementById("hotspotInfo");
+
+document.addEventListener("click", ev=>{
+  const hs = ev.target.closest(".hotspot");
+  if(!hs) return;
+
+  // 更新右侧信息
+  hotspotInfo.innerHTML = `
+    <div class="hotspot-info-title">${hs.dataset.title}</div>
+    ${hs.dataset.description}
+  `;
+
+  const rect = image.getBoundingClientRect();
+  const zoom = 2.2;
+  const lens = 140;
+
+  const x = ev.clientX - rect.left;
+  const y = ev.clientY - rect.top;
+
+  magnifier.style.display="block";
+  magnifier.style.left = (x - lens/2)+"px";
+  magnifier.style.top  = (y - lens/2)+"px";
+
+  magnifier.style.backgroundImage = `url(${image.src})`;
+  magnifier.style.backgroundSize = `${rect.width*zoom}px ${rect.height*zoom}px`;
+
+  magnifier.style.backgroundPosition =
+    `${-(x*zoom - lens/2)}px ${-(y*zoom - lens/2)}px`;
+});
 </script>
 
 </body>
