@@ -96,34 +96,29 @@
       height: auto;
     }
 
-    /* ⭐ 最终版：热点完全隐形 */
+    /* ⭐ 热点：完全隐形，只负责点击区域 */
     .hotspot {
       position: absolute;
       border-radius: 999px;
       cursor: pointer;
-      background: transparent; /* 隐形 */
+      background: transparent;
       border: none;
     }
 
-    /* ⭐ 点击热点出现放大镜效果 */
-    .hotspot.clicked {
-      animation: magnify 0.5s ease-out;
-      background: rgba(255, 255, 255, 0.15); /* 点击瞬间微亮 */
-    }
-
-    @keyframes magnify {
-      0% {
-        transform: scale(1);
-        box-shadow: 0 0 0 0 rgba(255,255,255,0.4);
-      }
-      50% {
-        transform: scale(1.6);
-        box-shadow: 0 0 20px 8px rgba(255,255,255,0.4);
-      }
-      100% {
-        transform: scale(1);
-        box-shadow: 0 0 0 0 rgba(255,255,255,0);
-      }
+    /* ⭐ 放大镜：默认隐藏，点击热点时显示 */
+    #magnifier {
+      position: absolute;
+      width: 120px;          /* 放大镜直径，可以改大/改小 */
+      height: 120px;
+      border-radius: 50%;
+      pointer-events: none;  /* 不挡住后续点击 */
+      border: 2px solid #fff;
+      box-shadow: 0 0 15px rgba(0,0,0,0.6);
+      display: none;
+      background-repeat: no-repeat;
+      overflow: hidden;
+      z-index: 5;
+      transition: opacity 0.2s ease-out;
     }
 
     .hotspot-info {
@@ -207,49 +202,51 @@
   </section>
 
   <!-- Step 4 -->
-<section id="step4" class="step">
-  <div class="step-indicator">Step 4 / 4</div>
-  <h2>Interactive Image</h2>
-  <p>Click on the people, the water bottle or the fire extinguisher to learn more.</p>
+  <section id="step4" class="step">
+    <div class="step-indicator">Step 4 / 4</div>
+    <h2>Interactive Image</h2>
+    <p>Click on the people, the water bottle or the fire extinguisher to learn more.</p>
 
-  <div class="image-hotspot-container">
-    <div class="image-wrapper">
-      <img src="market-scene.png" alt="Market safety scene" />
+    <div class="image-hotspot-container">
+      <div class="image-wrapper">
+        <img src="market-scene.png" alt="Market safety scene" />
 
-      <!-- 你的热点 -->
-      <div class="hotspot"
-           data-title="Info tent staff"
-           data-description="The info tent staff help visitors with directions, safety information and emergency procedures."
-           style="top: 20%; left: 15%; width: 20%; height: 30%;"></div>
+        <!-- 你的热点们（位置你已经调好，就保持不动） -->
+        <div class="hotspot"
+             data-title="Info tent staff"
+             data-description="The info tent staff help visitors with directions, safety information and emergency procedures."
+             style="top: 20%; left: 15%; width: 20%; height: 30%;"></div>
 
-      <div class="hotspot"
-           data-title="Market stall vendor"
-           data-description="The market stall vendor sells fresh produce and should also know where safety equipment is located."
-           style="top: 18%; left: 60%; width: 20%; height: 28%;"></div>
+        <div class="hotspot"
+             data-title="Market stall vendor"
+             data-description="The market stall vendor sells fresh produce and should also know where safety equipment is located."
+             style="top: 18%; left: 60%; width: 20%; height: 28%;"></div>
 
-      <div class="hotspot"
-           data-title="Catering stall worker"
-           data-description="Catering stalls involve cooking and open flames, so having a fire extinguisher nearby is essential."
-           style="top: 59%; left: 73%; width: 11%; height: 28%;"></div>
+        <div class="hotspot"
+             data-title="Catering stall worker"
+             data-description="Catering stalls involve cooking and open flames, so having a fire extinguisher nearby is essential."
+             style="top: 59%; left: 73%; width: 11%; height: 28%;"></div>
 
-      <div class="hotspot"
-           data-title="Water bottle"
-           data-description="Staying hydrated is important for both staff and visitors, especially during outdoor events."
-           style="top: 48%; left: 45%; width: 10%; height: 28%;"></div>
+        <div class="hotspot"
+             data-title="Water bottle"
+             data-description="Staying hydrated is important for both staff and visitors, especially during outdoor events."
+             style="top: 48%; left: 45%; width: 10%; height: 28%;"></div>
 
-      <div class="hotspot"
-           data-title="Fire extinguisher"
-           data-description="Every catering stall should have a fire extinguisher. It must be easy to see and quick to reach."
-           style="top: 58%; left: 61%; width: 5%; height: 26%;"></div>
+        <div class="hotspot"
+             data-title="Fire extinguisher"
+             data-description="Every catering stall should have a fire extinguisher. It must be easy to see and quick to reach."
+             style="top: 58%; left: 61%; width: 5%; height: 26%;"></div>
 
+        <!-- ⭐ 放大镜层：点击热点时使用 -->
+        <div id="magnifier"></div>
+      </div>
+
+      <div class="hotspot-info" id="hotspotInfo">
+        <div class="hotspot-info-title">Hint</div>
+        <div>Click on the people, the water bottle or the fire extinguisher in the image to view more information.</div>
+      </div>
     </div>
-
-    <div class="hotspot-info" id="hotspotInfo">
-      <div class="hotspot-info-title">Hint</div>
-      <div>Click on the people, the water bottle or the fire extinguisher in the image to view more information.</div>
-    </div>
-  </div>
-</section>
+  </section>
 
 </div>
 
@@ -295,23 +292,51 @@
     }
   }
 
-  // ⭐ 最终版热点点击事件（带放大镜动画）
+  // ⭐ 放大镜 + 热点点击逻辑
+  const hotspotInfo = document.getElementById("hotspotInfo");
+  const magnifier = document.getElementById("magnifier");
+  const image = document.querySelector("#step4 .image-wrapper img");
+
   document.addEventListener("click", (event) => {
     const hotspot = event.target.closest(".hotspot");
-    if (!hotspot) return;
+    if (!hotspot) {
+      // 点到别的地方时，把放大镜收起来
+      magnifier.style.display = "none";
+      return;
+    }
 
-    /* 🔍 添加放大镜动画 */
-    hotspot.classList.add("clicked");
-    setTimeout(() => hotspot.classList.remove("clicked"), 500);
-
-    /* 📌 显示说明 */
+    // 1）显示文字信息
     const title = hotspot.dataset.title;
     const desc = hotspot.dataset.description;
-
-    document.getElementById("hotspotInfo").innerHTML = `
+    hotspotInfo.innerHTML = `
       <div class="hotspot-info-title">${title}</div>
       <div>${desc}</div>
     `;
+
+    // 2）放大镜逻辑：计算点击位置在图片中的坐标
+    if (!image) return;
+
+    const rect = image.getBoundingClientRect();
+    const zoom = 2.2; // 放大倍数，可以调整
+    const lensSize = 120; // 直径（要跟 CSS 中一致）
+
+    const clickX = event.clientX - rect.left; // 相对于图片左上角
+    const clickY = event.clientY - rect.top;
+
+    // 放大镜位置：居中在点击点
+    magnifier.style.display = "block";
+    magnifier.style.left = (clickX - lensSize / 2) + "px";
+    magnifier.style.top = (clickY - lensSize / 2) + "px";
+
+    // 背景图：同一张图片，放大 zoom 倍
+    magnifier.style.backgroundImage = `url(${image.src})`;
+    magnifier.style.backgroundSize = (rect.width * zoom) + "px " + (rect.height * zoom) + "px";
+
+    // 背景位置：让点击点出现在放大镜中心
+    const bgPosX = -(clickX * zoom - lensSize / 2);
+    const bgPosY = -(clickY * zoom - lensSize / 2);
+    magnifier.style.backgroundPosition = `${bgPosX}px ${bgPosY}px`;
+
   });
 
   // Quiz logic
@@ -342,7 +367,6 @@
     showStep(3);
     player2.playVideo();
   });
-
 </script>
 
 </body>
