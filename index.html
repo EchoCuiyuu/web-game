@@ -96,7 +96,7 @@
       height: auto;
     }
 
-    /* ⭐ 热点：完全隐形，只负责点击区域 */
+    /* ⭐ 热点：完全隐形，只负责点击区域，不再做任何放大动画 */
     .hotspot {
       position: absolute;
       border-radius: 999px;
@@ -105,20 +105,19 @@
       border: none;
     }
 
-    /* ⭐ 放大镜：默认隐藏，点击热点时显示 */
+    /* ⭐ 放大镜：单独一个圆形层，显示图片局部放大 */
     #magnifier {
       position: absolute;
-      width: 120px;          /* 放大镜直径，可以改大/改小 */
-      height: 120px;
+      width: 140px;          /* 放大镜直径，可改 */
+      height: 140px;
       border-radius: 50%;
-      pointer-events: none;  /* 不挡住后续点击 */
+      pointer-events: none;  /* 不挡住鼠标点击 */
       border: 2px solid #fff;
       box-shadow: 0 0 15px rgba(0,0,0,0.6);
-      display: none;
+      display: none;         /* 初始不显示，点击热点后显示 */
       background-repeat: no-repeat;
       overflow: hidden;
       z-index: 5;
-      transition: opacity 0.2s ease-out;
     }
 
     .hotspot-info {
@@ -211,7 +210,7 @@
       <div class="image-wrapper">
         <img src="market-scene.png" alt="Market safety scene" />
 
-        <!-- 你的热点们（位置你已经调好，就保持不动） -->
+        <!-- 你的热点区域（位置保持你调好的） -->
         <div class="hotspot"
              data-title="Info tent staff"
              data-description="The info tent staff help visitors with directions, safety information and emergency procedures."
@@ -237,7 +236,7 @@
              data-description="Every catering stall should have a fire extinguisher. It must be easy to see and quick to reach."
              style="top: 58%; left: 61%; width: 5%; height: 26%;"></div>
 
-        <!-- ⭐ 放大镜层：点击热点时使用 -->
+        <!-- ⭐ 放大镜层 -->
         <div id="magnifier"></div>
       </div>
 
@@ -300,12 +299,11 @@
   document.addEventListener("click", (event) => {
     const hotspot = event.target.closest(".hotspot");
     if (!hotspot) {
-      // 点到别的地方时，把放大镜收起来
-      magnifier.style.display = "none";
+      // 不点击热点时，不改变放大镜（你说要“一直显示”，所以这里不隐藏）
       return;
     }
 
-    // 1）显示文字信息
+    // 1）更新文字信息
     const title = hotspot.dataset.title;
     const desc = hotspot.dataset.description;
     hotspotInfo.innerHTML = `
@@ -313,30 +311,29 @@
       <div>${desc}</div>
     `;
 
-    // 2）放大镜逻辑：计算点击位置在图片中的坐标
+    // 2）图片放大镜逻辑
     if (!image) return;
 
     const rect = image.getBoundingClientRect();
-    const zoom = 2.2; // 放大倍数，可以调整
-    const lensSize = 120; // 直径（要跟 CSS 中一致）
+    const zoom = 2.2;       // 放大倍数，可以调大一点例如 3
+    const lensSize = 140;   // 直径，要和 CSS 里的宽高一致
 
-    const clickX = event.clientX - rect.left; // 相对于图片左上角
-    const clickY = event.clientY - rect.top;
+    const clickX = event.clientX - rect.left; // 相对图片的 x
+    const clickY = event.clientY - rect.top;  // 相对图片的 y
 
-    // 放大镜位置：居中在点击点
+    // 放大镜位置：让它中心对准点击点
     magnifier.style.display = "block";
     magnifier.style.left = (clickX - lensSize / 2) + "px";
     magnifier.style.top = (clickY - lensSize / 2) + "px";
 
-    // 背景图：同一张图片，放大 zoom 倍
+    // 使用同一张图片作为背景，放大到 zoom 倍
     magnifier.style.backgroundImage = `url(${image.src})`;
     magnifier.style.backgroundSize = (rect.width * zoom) + "px " + (rect.height * zoom) + "px";
 
-    // 背景位置：让点击点出现在放大镜中心
+    // 背景位置：确保点击的位置出现在放大镜中心
     const bgPosX = -(clickX * zoom - lensSize / 2);
     const bgPosY = -(clickY * zoom - lensSize / 2);
     magnifier.style.backgroundPosition = `${bgPosX}px ${bgPosY}px`;
-
   });
 
   // Quiz logic
