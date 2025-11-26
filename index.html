@@ -96,14 +96,35 @@
       height: auto;
     }
 
+    /* ⭐ 最终版：热点完全隐形 */
     .hotspot {
       position: absolute;
       border-radius: 999px;
       cursor: pointer;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px dashed rgba(255, 255, 255, 0.3);
+      background: transparent; /* 隐形 */
+      border: none;
     }
-    .hotspot:hover { background: rgba(255, 255, 255, 0.15); }
+
+    /* ⭐ 点击热点出现放大镜效果 */
+    .hotspot.clicked {
+      animation: magnify 0.5s ease-out;
+      background: rgba(255, 255, 255, 0.15); /* 点击瞬间微亮 */
+    }
+
+    @keyframes magnify {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(255,255,255,0.4);
+      }
+      50% {
+        transform: scale(1.6);
+        box-shadow: 0 0 20px 8px rgba(255,255,255,0.4);
+      }
+      100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(255,255,255,0);
+      }
+    }
 
     .hotspot-info {
       flex: 1 1 200px;
@@ -134,7 +155,7 @@
 <body>
 <div class="app-container">
 
-  <!-- Step 1: 视频 1 -->
+  <!-- Step 1 -->
   <section id="step1" class="step active">
     <div class="step-indicator">Step 1 / 4</div>
     <h2>Video 1</h2>
@@ -145,7 +166,7 @@
     </div>
   </section>
 
-  <!-- Step 2: 选择题 -->
+  <!-- Step 2 -->
   <section id="step2" class="step">
     <div class="step-indicator">Step 2 / 4</div>
     <h2>Quiz</h2>
@@ -174,7 +195,7 @@
     <div class="message" id="quizMessage"></div>
   </section>
 
-  <!-- Step 3: 视频 2 -->
+  <!-- Step 3 -->
   <section id="step3" class="step">
     <div class="step-indicator">Step 3 / 4</div>
     <h2>Video 2</h2>
@@ -185,6 +206,7 @@
     </div>
   </section>
 
+  <!-- Step 4 -->
 <section id="step4" class="step">
   <div class="step-indicator">Step 4 / 4</div>
   <h2>Interactive Image</h2>
@@ -192,55 +214,42 @@
 
   <div class="image-hotspot-container">
     <div class="image-wrapper">
-      <!-- 使用你的图片名 -->
       <img src="market-scene.png" alt="Market safety scene" />
 
- <!-- Info tent 人物 -->
-<div class="hotspot"
-     data-title="Info tent staff"
-     data-description="The info tent staff help visitors with directions, safety information and emergency procedures."
-     style="top: 20%; left: 15%; width: 20%; height: 30%;">
-</div>
+      <!-- 你的热点 -->
+      <div class="hotspot"
+           data-title="Info tent staff"
+           data-description="The info tent staff help visitors with directions, safety information and emergency procedures."
+           style="top: 20%; left: 15%; width: 20%; height: 30%;"></div>
 
-<!-- Market stall vendor -->
-<div class="hotspot"
-     data-title="Market stall vendor"
-     data-description="The market stall vendor sells fresh produce and should also know where safety equipment is located."
-     style="top: 18%; left: 60%; width: 20%; height: 28%;">
-</div>
+      <div class="hotspot"
+           data-title="Market stall vendor"
+           data-description="The market stall vendor sells fresh produce and should also know where safety equipment is located."
+           style="top: 18%; left: 60%; width: 20%; height: 28%;"></div>
 
-<!-- Catering stall worker -->
-<div class="hotspot"
-     data-title="Catering stall worker"
-     data-description="Catering stalls involve cooking and open flames, so having a fire extinguisher nearby is essential."
-     style="top: 59%; left: 73%; width: 11%; height: 28%;">
-</div>
+      <div class="hotspot"
+           data-title="Catering stall worker"
+           data-description="Catering stalls involve cooking and open flames, so having a fire extinguisher nearby is essential."
+           style="top: 59%; left: 73%; width: 11%; height: 28%;"></div>
 
-<!-- 水瓶 -->
-<div class="hotspot"
-     data-title="Water bottle"
-     data-description="Staying hydrated is important for both staff and visitors, especially during outdoor events."
-     style="top: 48%; left: 45%; width: 10%; height: 28%;">
-</div>
+      <div class="hotspot"
+           data-title="Water bottle"
+           data-description="Staying hydrated is important for both staff and visitors, especially during outdoor events."
+           style="top: 48%; left: 45%; width: 10%; height: 28%;"></div>
 
-<!-- 灭火器 -->
-<div class="hotspot"
-     data-title="Fire extinguisher"
-     data-description="Every catering stall should have a fire extinguisher. It must be easy to see and quick to reach."
-     style="top: 58%; left: 61%; width: 5%; height: 26%;">
-</div>
+      <div class="hotspot"
+           data-title="Fire extinguisher"
+           data-description="Every catering stall should have a fire extinguisher. It must be easy to see and quick to reach."
+           style="top: 58%; left: 61%; width: 5%; height: 26%;"></div>
 
     </div>
 
-    <!-- 右侧信息框 -->
     <div class="hotspot-info" id="hotspotInfo">
       <div class="hotspot-info-title">Hint</div>
       <div>Click on the people, the water bottle or the fire extinguisher in the image to view more information.</div>
     </div>
   </div>
 </section>
-
-
 
 </div>
 
@@ -250,9 +259,8 @@
 <script>
   let player1, player2;
 
-  const VIDEO_1_ID = "_ui398aLpIA";    // 你的第一个 shorts
-  const VIDEO_2_ID = "TAoYnAJLXoQ";    // 第二个 shorts
-
+  const VIDEO_1_ID = "_ui398aLpIA";
+  const VIDEO_2_ID = "TAoYnAJLXoQ";
   const CORRECT_ANSWER = "A";
 
   function showStep(step) {
@@ -287,6 +295,25 @@
     }
   }
 
+  // ⭐ 最终版热点点击事件（带放大镜动画）
+  document.addEventListener("click", (event) => {
+    const hotspot = event.target.closest(".hotspot");
+    if (!hotspot) return;
+
+    /* 🔍 添加放大镜动画 */
+    hotspot.classList.add("clicked");
+    setTimeout(() => hotspot.classList.remove("clicked"), 500);
+
+    /* 📌 显示说明 */
+    const title = hotspot.dataset.title;
+    const desc = hotspot.dataset.description;
+
+    document.getElementById("hotspotInfo").innerHTML = `
+      <div class="hotspot-info-title">${title}</div>
+      <div>${desc}</div>
+    `;
+  });
+
   // Quiz logic
   const msg = document.getElementById("quizMessage");
   const nextBtn = document.getElementById("quizNextBtn");
@@ -316,19 +343,6 @@
     player2.playVideo();
   });
 
-  // Hotspots
-  document.addEventListener("click", (event) => {
-    const hotspot = event.target.closest(".hotspot");
-    if (!hotspot) return;
-
-    const title = hotspot.dataset.title;
-    const desc = hotspot.dataset.description;
-
-    document.getElementById("hotspotInfo").innerHTML = `
-      <div class="hotspot-info-title">${title}</div>
-      <div>${desc}</div>
-    `;
-  });
 </script>
 
 </body>
