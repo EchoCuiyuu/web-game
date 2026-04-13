@@ -15,14 +15,14 @@
       min-height: 100vh;
       justify-content: center;
       align-items: flex-start;
-      padding-top: 28px;
+      padding-top: 10px;
       box-sizing: border-box;
     }
 
     .app-container {
       width: 100%;
       max-width: 1100px;
-      padding: 24px;
+      padding: 12px 24px 18px;
       box-sizing: border-box;
     }
 
@@ -50,7 +50,7 @@
     /* 按钮 */
     .btn {
       display: inline-block;
-      margin-top: 16px;
+      margin-top: 12px;
       padding: 10px 20px;
       border-radius: 999px;
       border: none;
@@ -68,7 +68,7 @@
 
     /* quiz */
     .quiz-option {
-      margin: 8px 0;
+      margin: 6px 0;
       display: block;
       font-size: 18px;
     }
@@ -76,20 +76,20 @@
     .quiz-card {
       background: #181818;
       border-radius: 16px;
-      padding: 22px 24px 28px;
+      padding: 18px 22px 20px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.45);
       max-width: 980px;
-      min-height: 760px;
+      min-height: 700px;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
     .quiz-card .btn {
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
 
     .quiz-card h3 {
       font-size: 28px;
-      margin: 0 0 18px 0;
+      margin: 0 0 12px 0;
     }
 
     /* 顶部主图 */
@@ -98,7 +98,7 @@
       max-width: none;
       height: auto;
       display: block;
-      margin: 0 0 24px 0;
+      margin: 0 0 18px 0;
       border-radius: 14px;
       border: 1px solid #333;
       object-fit: cover;
@@ -115,7 +115,7 @@
     /* 反馈文字 */
     .message {
       margin-top: 0;
-      min-height: 28px;
+      min-height: 24px;
       font-size: 16px;
       line-height: 1.35;
     }
@@ -190,7 +190,7 @@
       display: flex;
       gap: 20px;
       flex-wrap: wrap;
-      margin-top: 16px;
+      margin-top: 12px;
     }
 
     .image-wrapper {
@@ -242,9 +242,10 @@
       font-size: 16px;
     }
 
-    #step1 p {
+    #step1 p,
+    #step3 p {
       font-size: 18px;
-      margin: 0 0 18px 0;
+      margin: 0 0 14px 0;
     }
   </style>
 </head>
@@ -295,9 +296,11 @@
 
   <!-- Step 3 -->
   <section id="step3" class="step">
-    <div class="step-indicator">Step 3 / 4</div>
-    <h2>Video 2</h2>
-    <div class="video-wrapper"><div id="player2"></div></div>
+    <p>Please watch the video.</p>
+
+    <div class="video-wrapper">
+      <div id="player2"></div>
+    </div>
   </section>
 
   <!-- Step 4 -->
@@ -347,7 +350,7 @@
 let player1, player2;
 
 const VIDEO_1_ID = "rR9HqxVLosw";
-const VIDEO_2_ID = "TAoYnAJLXoQ";
+const VIDEO_2_ID = "PQV71INDaqY";
 
 const resetTimers = {
   quiz1: null,
