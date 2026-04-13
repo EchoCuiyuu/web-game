@@ -95,7 +95,7 @@
       margin: 0 0 18px 0;
     }
 
-    /* 题目配图：几乎铺满卡片 */
+    /* 顶部主图：几乎铺满卡片 */
     .quiz-image {
       width: 100%;
       max-width: none;
@@ -105,6 +105,14 @@
       border-radius: 14px;
       border: 1px solid #333;
       object-fit: cover;
+      opacity: 1;
+      transform: scale(1);
+      transition: opacity 0.32s ease, transform 0.32s ease;
+    }
+
+    .quiz-image.is-fading {
+      opacity: 0.12;
+      transform: scale(0.992);
     }
 
     /* 反馈文字 */
@@ -121,29 +129,6 @@
 
     .message.wrong {
       color: #ffb3b3;
-    }
-
-    /* 反馈图片也放大 */
-    .answer-feedback {
-      display: none;
-      margin-top: 14px;
-    }
-
-    .answer-feedback img {
-      width: 100%;
-      max-width: none;
-      height: auto;
-      display: block;
-      border-radius: 12px;
-      border: 1px solid #333;
-    }
-
-    .answer-feedback.correct img {
-      border-color: #4b7f4b;
-    }
-
-    .answer-feedback.wrong img {
-      border-color: #7f4b4b;
     }
 
     /* 滑动效果 */
@@ -281,7 +266,7 @@
 
     <!-- Q1 -->
     <div id="cardQ1" class="quiz-card">
-      <img class="quiz-image" src="question1.png" alt="Question 1 image">
+      <img id="q1MainImage" class="quiz-image" src="question1.png" alt="Question 1 image">
 
       <h3>Where are the fire extinguishers?</h3>
 
@@ -292,15 +277,11 @@
       <button class="btn" id="checkQ1">Check Answer</button>
       <button class="btn" id="quizNextBtnQ1" disabled>Next ▶</button>
       <div class="message" id="msgQ1"></div>
-
-      <div class="answer-feedback" id="feedbackQ1">
-        <img id="feedbackImgQ1" src="" alt="">
-      </div>
     </div>
 
     <!-- Q2 -->
     <div id="cardQ2" class="quiz-card" style="display:none; margin-top:30px;">
-      <img class="quiz-image" src="question2.png" alt="Question 2 image">
+      <img id="q2MainImage" class="quiz-image" src="question2.png" alt="Question 2 image">
 
       <h3>Which one is needed?</h3>
 
@@ -311,10 +292,6 @@
       <button class="btn" id="checkQ2">Check Answer</button>
       <button class="btn" id="quizNextBtn" disabled>Next ▶</button>
       <div class="message" id="msgQ2"></div>
-
-      <div class="answer-feedback" id="feedbackQ2">
-        <img id="feedbackImgQ2" src="" alt="">
-      </div>
     </div>
   </section>
 
@@ -374,6 +351,11 @@ let player1, player2;
 const VIDEO_1_ID = "rR9HqxVLosw";
 const VIDEO_2_ID = "TAoYnAJLXoQ";
 
+const resetTimers = {
+  quiz1: null,
+  quiz2: null
+};
+
 function showStep(num) {
   document.querySelectorAll(".step").forEach((s, i) => {
     s.classList.toggle("active", i === num - 1);
@@ -406,86 +388,117 @@ function shake(card) {
   card.classList.add("shake");
 }
 
+function fadeSwapImage(imgElement, newSrc, newAlt, duration = 320) {
+  imgElement.classList.add("is-fading");
+
+  setTimeout(() => {
+    imgElement.src = newSrc;
+    imgElement.alt = newAlt;
+    imgElement.classList.remove("is-fading");
+  }, duration);
+}
+
+function setInputsDisabled(quizName, disabled) {
+  document.querySelectorAll(`input[name="${quizName}"]`).forEach(input => {
+    input.disabled = disabled;
+  });
+}
+
 const cardQ1 = document.getElementById("cardQ1");
 const cardQ2 = document.getElementById("cardQ2");
 const nextQ1 = document.getElementById("quizNextBtnQ1");
 
-const questionImages = {
+const quizConfig = {
   quiz1: {
+    questionSrc: "question1.png",
+    questionAlt: "Question 1 image",
+    mainImageId: "q1MainImage",
+    checkButtonId: "checkQ1",
+    nextButtonId: "quizNextBtnQ1",
+    messageId: "msgQ1",
     correct: "A",
     options: {
       A: { src: "catering-stall.png", alt: "Catering stalls" },
       B: { src: "info-tent.png", alt: "Info tent" },
       C: { src: "market-stalls.png", alt: "Market stalls" }
-    },
-    messageId: "msgQ1",
-    feedbackId: "feedbackQ1",
-    feedbackImgId: "feedbackImgQ1"
+    }
   },
   quiz2: {
+    questionSrc: "question2.png",
+    questionAlt: "Question 2 image",
+    mainImageId: "q2MainImage",
+    checkButtonId: "checkQ2",
+    nextButtonId: "quizNextBtn",
+    messageId: "msgQ2",
     correct: "A",
     options: {
       A: { src: "water.png", alt: "Water" },
       B: { src: "co2.png", alt: "CO2" },
       C: { src: "foam.png", alt: "Foam" }
-    },
-    messageId: "msgQ2",
-    feedbackId: "feedbackQ2",
-    feedbackImgId: "feedbackImgQ2"
+    }
   }
 };
 
-function showAnswerImage(quizKey, selectedValue, isCorrect) {
-  const config = questionImages[quizKey];
-  const feedback = document.getElementById(config.feedbackId);
-  const feedbackImg = document.getElementById(config.feedbackImgId);
-  const selected = config.options[selectedValue];
-
-  feedbackImg.src = selected.src;
-  feedbackImg.alt = selected.alt;
-  feedback.style.display = "block";
-  feedback.className = isCorrect ? "answer-feedback correct" : "answer-feedback wrong";
+function lockQuiz(quizKey, locked) {
+  const config = quizConfig[quizKey];
+  document.getElementById(config.checkButtonId).disabled = locked;
+  setInputsDisabled(quizKey, locked);
 }
 
-function hideAnswerImage(quizKey) {
-  const config = questionImages[quizKey];
-  const feedback = document.getElementById(config.feedbackId);
-  const feedbackImg = document.getElementById(config.feedbackImgId);
-
-  feedback.style.display = "none";
-  feedback.className = "answer-feedback";
-  feedbackImg.src = "";
-  feedbackImg.alt = "";
+function clearQuizTimer(quizKey) {
+  if (resetTimers[quizKey]) {
+    clearTimeout(resetTimers[quizKey]);
+    resetTimers[quizKey] = null;
+  }
 }
 
-document.getElementById("checkQ1").onclick = () => {
-  const s = document.querySelector('input[name="quiz1"]:checked');
-  const msg = document.getElementById("msgQ1");
+function handleQuizCheck(quizKey, cardElement) {
+  const config = quizConfig[quizKey];
+  const selected = document.querySelector(`input[name="${quizKey}"]:checked`);
+  const msg = document.getElementById(config.messageId);
+  const mainImage = document.getElementById(config.mainImageId);
+  const nextBtn = document.getElementById(config.nextButtonId);
 
-  if (!s) {
+  clearQuizTimer(quizKey);
+
+  if (!selected) {
     msg.textContent = "Please select an option.";
     msg.className = "message wrong";
-    hideAnswerImage("quiz1");
-    nextQ1.disabled = true;
-    shake(cardQ1);
+    shake(cardElement);
     return;
   }
 
-  if (s.value === questionImages.quiz1.correct) {
+  const choice = config.options[selected.value];
+  fadeSwapImage(mainImage, choice.src, choice.alt);
+
+  if (selected.value === config.correct) {
     msg.textContent = "Correct! Click Next.";
     msg.className = "message correct";
-    showAnswerImage("quiz1", s.value, true);
-    nextQ1.disabled = false;
-  } else {
-    msg.textContent = "Wrong. Try again!";
-    msg.className = "message wrong";
-    showAnswerImage("quiz1", s.value, false);
-    nextQ1.disabled = true;
-    shake(cardQ1);
+    lockQuiz(quizKey, true);
+    nextBtn.disabled = false;
+    return;
   }
+
+  msg.textContent = "Wrong. Try again!";
+  msg.className = "message wrong";
+  nextBtn.disabled = true;
+  lockQuiz(quizKey, true);
+  shake(cardElement);
+
+  resetTimers[quizKey] = setTimeout(() => {
+    fadeSwapImage(mainImage, config.questionSrc, config.questionAlt);
+    setTimeout(() => {
+      lockQuiz(quizKey, false);
+    }, 340);
+  }, 3000);
+}
+
+document.getElementById("checkQ1").onclick = () => {
+  handleQuizCheck("quiz1", cardQ1);
 };
 
 document.getElementById("quizNextBtnQ1").onclick = () => {
+  clearQuizTimer("quiz1");
   cardQ1.classList.remove("slide-in-right");
   cardQ1.classList.add("slide-out-left");
 
@@ -498,34 +511,11 @@ document.getElementById("quizNextBtnQ1").onclick = () => {
 };
 
 document.getElementById("checkQ2").onclick = () => {
-  const s = document.querySelector('input[name="quiz2"]:checked');
-  const msg = document.getElementById("msgQ2");
-  const next = document.getElementById("quizNextBtn");
-
-  if (!s) {
-    msg.textContent = "Please select an option.";
-    msg.className = "message wrong";
-    hideAnswerImage("quiz2");
-    next.disabled = true;
-    shake(cardQ2);
-    return;
-  }
-
-  if (s.value === questionImages.quiz2.correct) {
-    msg.textContent = "Correct! Click Next.";
-    msg.className = "message correct";
-    showAnswerImage("quiz2", s.value, true);
-    next.disabled = false;
-  } else {
-    msg.textContent = "Wrong. Try again!";
-    msg.className = "message wrong";
-    showAnswerImage("quiz2", s.value, false);
-    next.disabled = true;
-    shake(cardQ2);
-  }
+  handleQuizCheck("quiz2", cardQ2);
 };
 
 document.getElementById("quizNextBtn").onclick = () => {
+  clearQuizTimer("quiz2");
   showStep(3);
   player2.playVideo();
 };
