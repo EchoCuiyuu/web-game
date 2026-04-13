@@ -54,7 +54,6 @@
     .btn {
       display: inline-block;
       margin-top: 16px;
-      margin-right: 12px;
       padding: 10px 20px;
       border-radius: 999px;
       border: none;
@@ -275,7 +274,6 @@
       <label class="quiz-option"><input type="radio" name="quiz1" value="C"> C. Market stalls</label>
 
       <button class="btn" id="checkQ1">Check Answer</button>
-      <button class="btn" id="quizNextBtnQ1" disabled>Next ▶</button>
       <div class="message" id="msgQ1"></div>
     </div>
 
@@ -290,7 +288,6 @@
       <label class="quiz-option"><input type="radio" name="quiz2" value="C"> Foam</label>
 
       <button class="btn" id="checkQ2">Check Answer</button>
-      <button class="btn" id="quizNextBtn" disabled>Next ▶</button>
       <div class="message" id="msgQ2"></div>
     </div>
   </section>
@@ -388,14 +385,16 @@ function shake(card) {
   card.classList.add("shake");
 }
 
-function fadeSwapImage(imgElement, newSrc, newAlt, duration = 320) {
+function fadeSwapImage(imgElement, newSrc, newAlt) {
   imgElement.classList.add("is-fading");
+  imgElement.src = newSrc;
+  imgElement.alt = newAlt;
 
-  setTimeout(() => {
-    imgElement.src = newSrc;
-    imgElement.alt = newAlt;
-    imgElement.classList.remove("is-fading");
-  }, duration);
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      imgElement.classList.remove("is-fading");
+    });
+  });
 }
 
 function setInputsDisabled(quizName, disabled) {
@@ -404,9 +403,15 @@ function setInputsDisabled(quizName, disabled) {
   });
 }
 
+function clearQuizTimer(quizKey) {
+  if (resetTimers[quizKey]) {
+    clearTimeout(resetTimers[quizKey]);
+    resetTimers[quizKey] = null;
+  }
+}
+
 const cardQ1 = document.getElementById("cardQ1");
 const cardQ2 = document.getElementById("cardQ2");
-const nextQ1 = document.getElementById("quizNextBtnQ1");
 
 const quizConfig = {
   quiz1: {
@@ -414,7 +419,6 @@ const quizConfig = {
     questionAlt: "Question 1 image",
     mainImageId: "q1MainImage",
     checkButtonId: "checkQ1",
-    nextButtonId: "quizNextBtnQ1",
     messageId: "msgQ1",
     correct: "A",
     options: {
@@ -428,7 +432,6 @@ const quizConfig = {
     questionAlt: "Question 2 image",
     mainImageId: "q2MainImage",
     checkButtonId: "checkQ2",
-    nextButtonId: "quizNextBtn",
     messageId: "msgQ2",
     correct: "A",
     options: {
@@ -445,11 +448,16 @@ function lockQuiz(quizKey, locked) {
   setInputsDisabled(quizKey, locked);
 }
 
-function clearQuizTimer(quizKey) {
-  if (resetTimers[quizKey]) {
-    clearTimeout(resetTimers[quizKey]);
-    resetTimers[quizKey] = null;
-  }
+function goToQuestion2() {
+  cardQ1.classList.remove("slide-in-right");
+  cardQ1.classList.add("slide-out-left");
+
+  setTimeout(() => {
+    cardQ1.style.display = "none";
+    cardQ2.style.display = "block";
+    cardQ2.classList.remove("slide-out-left");
+    cardQ2.classList.add("slide-in-right");
+  }, 500);
 }
 
 function handleQuizCheck(quizKey, cardElement) {
@@ -457,7 +465,6 @@ function handleQuizCheck(quizKey, cardElement) {
   const selected = document.querySelector(`input[name="${quizKey}"]:checked`);
   const msg = document.getElementById(config.messageId);
   const mainImage = document.getElementById(config.mainImageId);
-  const nextBtn = document.getElementById(config.nextButtonId);
 
   clearQuizTimer(quizKey);
 
@@ -472,24 +479,33 @@ function handleQuizCheck(quizKey, cardElement) {
   fadeSwapImage(mainImage, choice.src, choice.alt);
 
   if (selected.value === config.correct) {
-    msg.textContent = "Correct! Click Next.";
+    msg.textContent = "Correct!";
     msg.className = "message correct";
     lockQuiz(quizKey, true);
-    nextBtn.disabled = false;
+
+    resetTimers[quizKey] = setTimeout(() => {
+      if (quizKey === "quiz1") {
+        goToQuestion2();
+      } else if (quizKey === "quiz2") {
+        showStep(3);
+        player2.playVideo();
+      }
+    }, 3000);
+
     return;
   }
 
   msg.textContent = "Wrong. Try again!";
   msg.className = "message wrong";
-  nextBtn.disabled = true;
   lockQuiz(quizKey, true);
   shake(cardElement);
 
   resetTimers[quizKey] = setTimeout(() => {
     fadeSwapImage(mainImage, config.questionSrc, config.questionAlt);
+
     setTimeout(() => {
       lockQuiz(quizKey, false);
-    }, 340);
+    }, 180);
   }, 3000);
 }
 
@@ -497,27 +513,8 @@ document.getElementById("checkQ1").onclick = () => {
   handleQuizCheck("quiz1", cardQ1);
 };
 
-document.getElementById("quizNextBtnQ1").onclick = () => {
-  clearQuizTimer("quiz1");
-  cardQ1.classList.remove("slide-in-right");
-  cardQ1.classList.add("slide-out-left");
-
-  setTimeout(() => {
-    cardQ1.style.display = "none";
-    cardQ2.style.display = "block";
-    cardQ2.classList.remove("slide-out-left");
-    cardQ2.classList.add("slide-in-right");
-  }, 500);
-};
-
 document.getElementById("checkQ2").onclick = () => {
   handleQuizCheck("quiz2", cardQ2);
-};
-
-document.getElementById("quizNextBtn").onclick = () => {
-  clearQuizTimer("quiz2");
-  showStep(3);
-  player2.playVideo();
 };
 
 const image = document.querySelector("#step4 img");
