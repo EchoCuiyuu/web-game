@@ -29,7 +29,6 @@
     .step { display: none; }
     .step.active { display: block; }
 
-    /* 视频 */
     .video-wrapper {
       position: relative;
       padding-bottom: 56.25%;
@@ -47,7 +46,6 @@
       height: 100%;
     }
 
-    /* 按钮 */
     .btn {
       display: inline-block;
       margin-top: 12px;
@@ -66,7 +64,6 @@
       cursor: not-allowed;
     }
 
-    /* quiz */
     .quiz-option {
       margin: 6px 0;
       display: block;
@@ -92,7 +89,6 @@
       margin: 0 0 12px 0;
     }
 
-    /* 顶部主图 */
     .quiz-image {
       width: 100%;
       max-width: none;
@@ -112,7 +108,6 @@
       transform: scale(0.992);
     }
 
-    /* 反馈文字 */
     .message {
       margin-top: 0;
       min-height: 24px;
@@ -128,7 +123,6 @@
       color: #ffb3b3;
     }
 
-    /* 滑动效果 */
     .slide-in-right {
       animation: slideInRight 0.35s ease-out forwards;
     }
@@ -147,7 +141,6 @@
       to   { opacity: 0; transform: translateX(-40px); }
     }
 
-    /* 错误抖动 */
     .quiz-card.shake {
       animation: shake 0.4s ease;
     }
@@ -171,14 +164,17 @@
       margin: 0 0 14px 0;
     }
 
-    /* Step 4 - hazard scene */
+    /* Step 4 */
     .hazard-step {
-      max-width: 1100px;
+      max-width: 920px;
+      margin: 0 auto;
     }
 
     .hazard-image-wrapper {
       position: relative;
       width: 100%;
+      max-width: 920px;
+      margin: 0 auto;
       border-radius: 16px;
       overflow: hidden;
       border: 1px solid #333;
@@ -195,22 +191,48 @@
       position: absolute;
       background: transparent;
       border: none;
-      cursor: pointer;
+      cursor: default;
     }
 
     .hazard-question {
       font-size: 30px;
-      margin: 18px 0 14px 0;
+      margin: 16px 0 10px 0;
+    }
+
+    .hazard-helper {
+      margin: 0 0 12px 0;
+      font-size: 16px;
+      color: #c9c9c9;
+      line-height: 1.4;
     }
 
     .hazard-answer-box {
-      min-height: 60px;
+      min-height: 100px;
       padding: 16px 18px;
       border-radius: 14px;
       background: #181818;
       border: 1px solid #333;
       font-size: 18px;
       line-height: 1.45;
+    }
+
+    .hazard-answer-title {
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .hazard-answer-empty {
+      color: #c9c9c9;
+      font-size: 16px;
+    }
+
+    .hazard-answer-list {
+      margin: 0;
+      padding-left: 22px;
+    }
+
+    .hazard-answer-list li {
+      margin: 6px 0;
     }
   </style>
 </head>
@@ -276,29 +298,36 @@
 
         <!-- 1. A sign falling off a tent -->
         <div class="hazard-hotspot"
+             data-id="tent-sign"
              data-answer="A sign falling off a tent"
-             style="top: 23%; left: 30%; width: 16%; height: 40%;"></div>
+             style="top: 23%; left: 29%; width: 17%; height: 40%;"></div>
 
         <!-- 2. A car blocking a fire exit -->
         <div class="hazard-hotspot"
+             data-id="fire-exit-car"
              data-answer="A car blocking a fire exit"
-             style="top: 14%; left: 46%; width: 40%; height: 38%;"></div>
+             style="top: 14%; left: 45%; width: 41%; height: 39%;"></div>
 
         <!-- 3. A pile of rubbish -->
         <div class="hazard-hotspot"
+             data-id="rubbish-pile"
              data-answer="A pile of rubbish"
-             style="top: 58%; left: 32%; width: 47%; height: 35%;"></div>
+             style="top: 58%; left: 31%; width: 48%; height: 35%;"></div>
 
         <!-- 4. A person without a hi-vis on -->
         <div class="hazard-hotspot"
+             data-id="no-hi-vis"
              data-answer="A person without a hi-vis on"
              style="top: 46%; left: 84%; width: 11%; height: 28%;"></div>
       </div>
 
       <h3 class="hazard-question">What hazards could you find on this photo?</h3>
+      <p class="hazard-helper">Find all the hazards in the image.</p>
 
       <div class="hazard-answer-box" id="hazardAnswerBox">
-        Click on a hazard in the image to reveal the answer.
+        <div class="hazard-answer-title">Hazards found</div>
+        <div class="hazard-answer-empty" id="hazardEmptyState">No hazards found yet.</div>
+        <ol class="hazard-answer-list" id="hazardAnswerList"></ol>
       </div>
     </div>
   </section>
@@ -482,13 +511,46 @@ document.getElementById("checkQ2").onclick = () => {
   handleQuizCheck("quiz2", cardQ2);
 };
 
-const hazardAnswerBox = document.getElementById("hazardAnswerBox");
+/* Step 4 cumulative hazards */
+const hazardAnswerList = document.getElementById("hazardAnswerList");
+const hazardEmptyState = document.getElementById("hazardEmptyState");
+
+const foundHazards = new Set();
+const hazardOrder = [
+  { id: "tent-sign", text: "A sign falling off a tent" },
+  { id: "fire-exit-car", text: "A car blocking a fire exit" },
+  { id: "rubbish-pile", text: "A pile of rubbish" },
+  { id: "no-hi-vis", text: "A person without a hi-vis on" }
+];
+
+function renderHazardList() {
+  hazardAnswerList.innerHTML = "";
+
+  const foundItems = hazardOrder.filter(item => foundHazards.has(item.id));
+
+  if (foundItems.length === 0) {
+    hazardEmptyState.style.display = "block";
+    return;
+  }
+
+  hazardEmptyState.style.display = "none";
+
+  foundItems.forEach(item => {
+    const li = document.createElement("li");
+    li.textContent = item.text;
+    hazardAnswerList.appendChild(li);
+  });
+}
 
 document.addEventListener("click", ev => {
   const hs = ev.target.closest(".hazard-hotspot");
   if (!hs) return;
 
-  hazardAnswerBox.textContent = hs.dataset.answer;
+  const hazardId = hs.dataset.id;
+  if (!foundHazards.has(hazardId)) {
+    foundHazards.add(hazardId);
+    renderHazardList();
+  }
 });
 </script>
 
