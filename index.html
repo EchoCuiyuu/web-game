@@ -14,7 +14,9 @@
       display: flex;
       min-height: 100vh;
       justify-content: center;
-      align-items: center;
+      align-items: flex-start;
+      padding-top: 28px;
+      box-sizing: border-box;
     }
 
     .app-container {
@@ -26,11 +28,6 @@
 
     .step { display: none; }
     .step.active { display: block; }
-
-    /* Step 2 整体上移 */
-    #step2 {
-      margin-top: -36px;
-    }
 
     /* 视频 */
     .video-wrapper {
@@ -82,11 +79,12 @@
       padding: 22px 24px 28px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.45);
       max-width: 980px;
+      min-height: 760px;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
     .quiz-card .btn {
-      margin-bottom: 16px;
+      margin-bottom: 6px;
     }
 
     .quiz-card h3 {
@@ -94,7 +92,7 @@
       margin: 0 0 18px 0;
     }
 
-    /* 顶部主图：几乎铺满卡片 */
+    /* 顶部主图 */
     .quiz-image {
       width: 100%;
       max-width: none;
@@ -116,10 +114,10 @@
 
     /* 反馈文字 */
     .message {
-      margin-top: 6px;
-      min-height: 32px;
+      margin-top: 0;
+      min-height: 28px;
       font-size: 16px;
-      line-height: 1.4;
+      line-height: 1.35;
     }
 
     .message.correct {
@@ -243,6 +241,11 @@
     p {
       font-size: 16px;
     }
+
+    #step1 p {
+      font-size: 18px;
+      margin: 0 0 18px 0;
+    }
   </style>
 </head>
 
@@ -251,8 +254,6 @@
 
   <!-- Step 1 -->
   <section id="step1" class="step active">
-    <div class="step-indicator">Step 1 / 4</div>
-    <h2>Video 1</h2>
     <p>Please watch the video.</p>
 
     <div class="video-wrapper">
@@ -278,7 +279,7 @@
     </div>
 
     <!-- Q2 -->
-    <div id="cardQ2" class="quiz-card" style="display:none; margin-top:30px;">
+    <div id="cardQ2" class="quiz-card" style="display:none;">
       <img id="q2MainImage" class="quiz-image" src="question2.png" alt="Question 2 image">
 
       <h3>Which one is needed?</h3>
