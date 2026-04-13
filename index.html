@@ -58,6 +58,7 @@
       font-size: 14px;
       font-weight: 600;
     }
+
     .btn[disabled] {
       opacity: 0.4;
       cursor: not-allowed;
@@ -69,7 +70,6 @@
       display: block;
     }
 
-    /* 卡片外观 */
     .quiz-card {
       background: #181818;
       border-radius: 16px;
@@ -78,39 +78,93 @@
       max-width: 620px;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
-  
+
     .quiz-card .btn {
-  margin-bottom: 16px;   /* 你可以改成 16px、20px 都可以 */
-}
+      margin-bottom: 16px;
+    }
+
+    /* 题目配图 */
+    .quiz-image {
+      width: 100%;
+      max-width: 520px;
+      height: auto;
+      display: block;
+      margin: 0 0 18px 0;
+      border-radius: 12px;
+      border: 1px solid #333;
+      object-fit: cover;
+    }
+
+    /* 反馈文字 */
+    .message {
+      margin-top: 6px;
+      min-height: 28px;
+      font-size: 16px;
+      line-height: 1.4;
+    }
+
+    .message.correct {
+      color: #b6f0b2;
+    }
+
+    .message.wrong {
+      color: #ffb3b3;
+    }
+
+    /* 选项反馈图片 */
+    .answer-feedback {
+      display: none;
+      margin-top: 14px;
+    }
+
+    .answer-feedback img {
+      width: 100%;
+      max-width: 320px;
+      height: auto;
+      display: block;
+      border-radius: 12px;
+      border: 1px solid #333;
+    }
+
+    .answer-feedback.correct img {
+      border-color: #4b7f4b;
+    }
+
+    .answer-feedback.wrong img {
+      border-color: #7f4b4b;
+    }
 
     /* 滑动效果 */
     .slide-in-right {
       animation: slideInRight 0.35s ease-out forwards;
     }
+
     .slide-out-left {
       animation: slideOutLeft 0.35s ease-in forwards;
     }
 
     @keyframes slideInRight {
-      from { opacity:0; transform: translateX(40px); }
-      to   { opacity:1; transform: translateX(0); }
+      from { opacity: 0; transform: translateX(40px); }
+      to   { opacity: 1; transform: translateX(0); }
     }
+
     @keyframes slideOutLeft {
-      from { opacity:1; transform: translateX(0); }
-      to   { opacity:0; transform: translateX(-40px); }
+      from { opacity: 1; transform: translateX(0); }
+      to   { opacity: 0; transform: translateX(-40px); }
     }
 
     /* 错误抖动 */
     .quiz-card.shake {
       animation: shake 0.4s ease;
     }
+
     @keyframes shake {
-      0%{transform:translateX(0);}
-      20%{transform:translateX(-6px);}
-      40%{transform:translateX(6px);}
-      60%{transform:translateX(-4px);}
-      80%{transform:translateX(4px);}
-      100%{transform:translateX(0);}
+      0%   { transform: translateX(0); }
+      20%  { transform: translateX(-6px); }
+      40%  { transform: translateX(6px); }
+      60%  { transform: translateX(-4px); }
+      80%  { transform: translateX(4px); }
+      100% { transform: translateX(0); }
     }
 
     /* hotspot 区域（完全隐形） */
@@ -160,7 +214,6 @@
       display: block;
     }
 
-    /* hotspot 右侧信息区 */
     .hotspot-info {
       flex: 1 1 200px;
       min-width: 220px;
@@ -202,13 +255,15 @@
     </div>
   </section>
 
-  <!-- Step 2：两题 Quiz 卡片 -->
+  <!-- Step 2 -->
   <section id="step2" class="step">
     <div class="step-indicator">Step 2 / 4</div>
     <h2>Quiz</h2>
 
     <!-- Q1 -->
     <div id="cardQ1" class="quiz-card">
+      <img class="quiz-image" src="question1.png" alt="Question 1 image">
+
       <h3>Where are the fire extinguishers?</h3>
 
       <label class="quiz-option"><input type="radio" name="quiz1" value="A"> A. Catering stalls</label>
@@ -217,10 +272,16 @@
 
       <button class="btn" id="checkQ1">Check Answer</button>
       <div class="message" id="msgQ1"></div>
+
+      <div class="answer-feedback" id="feedbackQ1">
+        <img id="feedbackImgQ1" src="" alt="">
+      </div>
     </div>
 
     <!-- Q2 -->
     <div id="cardQ2" class="quiz-card" style="display:none; margin-top:30px;">
+      <img class="quiz-image" src="question2.png" alt="Question 2 image">
+
       <h3>Which one is needed?</h3>
 
       <label class="quiz-option"><input type="radio" name="quiz2" value="A"> Water</label>
@@ -230,6 +291,10 @@
       <button class="btn" id="checkQ2">Check Answer</button>
       <button class="btn" id="quizNextBtn" disabled>Next ▶</button>
       <div class="message" id="msgQ2"></div>
+
+      <div class="answer-feedback" id="feedbackQ2">
+        <img id="feedbackImgQ2" src="" alt="">
+      </div>
     </div>
   </section>
 
@@ -269,7 +334,6 @@
              data-description="Every catering stall should have a fire extinguisher."
              style="top: 58%; left: 61%; width: 5%; height: 26%;"></div>
 
-        <!-- 放大镜 -->
         <div id="magnifier"></div>
       </div>
 
@@ -282,42 +346,41 @@
 
 </div>
 
-<!-- YouTube API -->
 <script src="https://www.youtube.com/iframe_api"></script>
 
 <script>
 let player1, player2;
 
-// YouTube 视频 ID
 const VIDEO_1_ID = "rR9HqxVLosw";
 const VIDEO_2_ID = "TAoYnAJLXoQ";
 
-function showStep(num){
-  document.querySelectorAll(".step").forEach((s,i)=>{
-    s.classList.toggle("active", i === num-1);
+function showStep(num) {
+  document.querySelectorAll(".step").forEach((s, i) => {
+    s.classList.toggle("active", i === num - 1);
   });
 }
 
-function onYouTubeIframeAPIReady(){
+function onYouTubeIframeAPIReady() {
   player1 = new YT.Player("player1", {
     videoId: VIDEO_1_ID,
-    events: { onStateChange: e => {
-      if(e.data === YT.PlayerState.ENDED) showStep(2);
-    }}
+    events: {
+      onStateChange: e => {
+        if (e.data === YT.PlayerState.ENDED) showStep(2);
+      }
+    }
   });
 
   player2 = new YT.Player("player2", {
     videoId: VIDEO_2_ID,
-    events: { onStateChange: e => {
-      if(e.data === YT.PlayerState.ENDED) showStep(4);
-    }}
+    events: {
+      onStateChange: e => {
+        if (e.data === YT.PlayerState.ENDED) showStep(4);
+      }
+    }
   });
 }
 
-/* -------------------------
-    多题 Quiz：滑动 + 抖动
---------------------------*/
-function shake(card){
+function shake(card) {
   card.classList.remove("shake");
   void card.offsetWidth;
   card.classList.add("shake");
@@ -326,76 +389,129 @@ function shake(card){
 const cardQ1 = document.getElementById("cardQ1");
 const cardQ2 = document.getElementById("cardQ2");
 
-document.getElementById("checkQ1").onclick = ()=>{
+const questionImages = {
+  quiz1: {
+    correct: "A",
+    options: {
+      A: { src: "catering-stall.png", alt: "Catering stalls" },
+      B: { src: "info-tent.png", alt: "Info tent" },
+      C: { src: "market-stalls.png", alt: "Market stalls" }
+    },
+    messageId: "msgQ1",
+    feedbackId: "feedbackQ1",
+    feedbackImgId: "feedbackImgQ1"
+  },
+  quiz2: {
+    correct: "A",
+    options: {
+      A: { src: "water.png", alt: "Water" },
+      B: { src: "co2.png", alt: "CO2" },
+      C: { src: "foam.png", alt: "Foam" }
+    },
+    messageId: "msgQ2",
+    feedbackId: "feedbackQ2",
+    feedbackImgId: "feedbackImgQ2"
+  }
+};
+
+function showAnswerImage(quizKey, selectedValue, isCorrect) {
+  const config = questionImages[quizKey];
+  const feedback = document.getElementById(config.feedbackId);
+  const feedbackImg = document.getElementById(config.feedbackImgId);
+  const selected = config.options[selectedValue];
+
+  feedbackImg.src = selected.src;
+  feedbackImg.alt = selected.alt;
+  feedback.style.display = "block";
+  feedback.className = isCorrect ? "answer-feedback correct" : "answer-feedback wrong";
+}
+
+function hideAnswerImage(quizKey) {
+  const config = questionImages[quizKey];
+  const feedback = document.getElementById(config.feedbackId);
+  const feedbackImg = document.getElementById(config.feedbackImgId);
+
+  feedback.style.display = "none";
+  feedback.className = "answer-feedback";
+  feedbackImg.src = "";
+  feedbackImg.alt = "";
+}
+
+document.getElementById("checkQ1").onclick = () => {
   const s = document.querySelector('input[name="quiz1"]:checked');
   const msg = document.getElementById("msgQ1");
 
-  if(!s){
+  if (!s) {
     msg.textContent = "Please select an option.";
     msg.className = "message wrong";
+    hideAnswerImage("quiz1");
     shake(cardQ1);
     return;
   }
 
-  if(s.value==="A"){
+  if (s.value === questionImages.quiz1.correct) {
     msg.textContent = "Correct! Next question...";
     msg.className = "message correct";
+    showAnswerImage("quiz1", s.value, true);
 
+    cardQ1.classList.remove("slide-in-right");
     cardQ1.classList.add("slide-out-left");
-    setTimeout(()=>{
-      cardQ1.style.display="none";
-      cardQ2.style.display="block";
-      cardQ2.classList.add("slide-in-right");
-    },300);
 
+    setTimeout(() => {
+      cardQ1.style.display = "none";
+      cardQ2.style.display = "block";
+      cardQ2.classList.remove("slide-out-left");
+      cardQ2.classList.add("slide-in-right");
+    }, 900);
   } else {
     msg.textContent = "Wrong. Try again!";
     msg.className = "message wrong";
+    showAnswerImage("quiz1", s.value, false);
     shake(cardQ1);
   }
 };
 
-document.getElementById("checkQ2").onclick = ()=>{
+document.getElementById("checkQ2").onclick = () => {
   const s = document.querySelector('input[name="quiz2"]:checked');
   const msg = document.getElementById("msgQ2");
   const next = document.getElementById("quizNextBtn");
 
-  if(!s){
-    msg.textContent="Please select an option.";
-    msg.className="message wrong";
+  if (!s) {
+    msg.textContent = "Please select an option.";
+    msg.className = "message wrong";
+    hideAnswerImage("quiz2");
+    next.disabled = true;
     shake(cardQ2);
     return;
   }
 
-  if(s.value==="A"){
-    msg.textContent="Correct! Click Next.";
-    msg.className="message correct";
-    next.disabled=false;
+  if (s.value === questionImages.quiz2.correct) {
+    msg.textContent = "Correct! Click Next.";
+    msg.className = "message correct";
+    showAnswerImage("quiz2", s.value, true);
+    next.disabled = false;
   } else {
-    msg.textContent="Wrong. Try again!";
-    msg.className="message wrong";
-    next.disabled=true;
+    msg.textContent = "Wrong. Try again!";
+    msg.className = "message wrong";
+    showAnswerImage("quiz2", s.value, false);
+    next.disabled = true;
     shake(cardQ2);
   }
 };
 
-document.getElementById("quizNextBtn").onclick = ()=>{
+document.getElementById("quizNextBtn").onclick = () => {
   showStep(3);
   player2.playVideo();
 };
 
-/* -------------------------
-   放大镜 + hotspot
---------------------------*/
 const image = document.querySelector("#step4 img");
 const magnifier = document.getElementById("magnifier");
 const hotspotInfo = document.getElementById("hotspotInfo");
 
-document.addEventListener("click", ev=>{
+document.addEventListener("click", ev => {
   const hs = ev.target.closest(".hotspot");
-  if(!hs) return;
+  if (!hs) return;
 
-  // 更新右侧信息
   hotspotInfo.innerHTML = `
     <div class="hotspot-info-title">${hs.dataset.title}</div>
     ${hs.dataset.description}
@@ -408,15 +524,13 @@ document.addEventListener("click", ev=>{
   const x = ev.clientX - rect.left;
   const y = ev.clientY - rect.top;
 
-  magnifier.style.display="block";
-  magnifier.style.left = (x - lens/2)+"px";
-  magnifier.style.top  = (y - lens/2)+"px";
+  magnifier.style.display = "block";
+  magnifier.style.left = (x - lens / 2) + "px";
+  magnifier.style.top = (y - lens / 2) + "px";
 
   magnifier.style.backgroundImage = `url(${image.src})`;
-  magnifier.style.backgroundSize = `${rect.width*zoom}px ${rect.height*zoom}px`;
-
-  magnifier.style.backgroundPosition =
-    `${-(x*zoom - lens/2)}px ${-(y*zoom - lens/2)}px`;
+  magnifier.style.backgroundSize = `${rect.width * zoom}px ${rect.height * zoom}px`;
+  magnifier.style.backgroundPosition = `${-(x * zoom - lens / 2)}px ${-(y * zoom - lens / 2)}px`;
 });
 </script>
 
