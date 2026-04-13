@@ -27,6 +27,11 @@
     .step { display: none; }
     .step.active { display: block; }
 
+    /* Step 2 整体上移 */
+    #step2 {
+      margin-top: -36px;
+    }
+
     /* 视频 */
     .video-wrapper {
       position: relative;
@@ -75,9 +80,9 @@
     .quiz-card {
       background: #181818;
       border-radius: 16px;
-      padding: 28px 32px;
+      padding: 22px 24px 28px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.45);
-      max-width: 900px;
+      max-width: 980px;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
@@ -90,13 +95,13 @@
       margin: 0 0 18px 0;
     }
 
-    /* 题目配图 */
+    /* 题目配图：几乎铺满卡片 */
     .quiz-image {
       width: 100%;
-      max-width: 780px;
+      max-width: none;
       height: auto;
       display: block;
-      margin: 0 0 22px 0;
+      margin: 0 0 24px 0;
       border-radius: 14px;
       border: 1px solid #333;
       object-fit: cover;
@@ -118,7 +123,7 @@
       color: #ffb3b3;
     }
 
-    /* 选项反馈图片 */
+    /* 反馈图片也放大 */
     .answer-feedback {
       display: none;
       margin-top: 14px;
@@ -126,7 +131,7 @@
 
     .answer-feedback img {
       width: 100%;
-      max-width: 520px;
+      max-width: none;
       height: auto;
       display: block;
       border-radius: 12px;
@@ -273,8 +278,6 @@
 
   <!-- Step 2 -->
   <section id="step2" class="step">
-    <div class="step-indicator">Step 2 / 4</div>
-    <h2>Quiz</h2>
 
     <!-- Q1 -->
     <div id="cardQ1" class="quiz-card">
