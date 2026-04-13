@@ -161,83 +161,6 @@
       100% { transform: translateX(0); }
     }
 
-    /* hotspot 区域（完全隐形） */
-    .hotspot {
-      position: absolute;
-      border-radius: 999px;
-      background: transparent;
-      border: none;
-      cursor: pointer;
-    }
-
-    /* 放大镜层 */
-    #magnifier {
-      position: absolute;
-      width: 140px;
-      height: 140px;
-      border-radius: 50%;
-      pointer-events: none;
-      border: 2px solid #fff;
-      box-shadow: 0 0 15px rgba(0,0,0,0.6);
-      display: none;
-      background-repeat: no-repeat;
-      overflow: hidden;
-      z-index: 5;
-    }
-
-    /* hotspot 区域布局 */
-    .image-hotspot-container {
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-      margin-top: 12px;
-    }
-
-    .image-wrapper {
-      position: relative;
-      flex: 1 1 300px;
-      max-width: 500px;
-      border-radius: 12px;
-      overflow: hidden;
-      border: 1px solid #333;
-    }
-
-    .image-wrapper img {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
-
-    .hotspot-info {
-      flex: 1 1 200px;
-      min-width: 220px;
-      padding: 12px 16px;
-      border-radius: 12px;
-      border: 1px solid #333;
-      background: #181818;
-      font-size: 14px;
-      line-height: 1.5;
-    }
-
-    .hotspot-info-title {
-      font-weight: 600;
-      margin-bottom: 6px;
-      font-size: 15px;
-    }
-
-    .step-indicator {
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: #aaa;
-      margin-bottom: 8px;
-    }
-
-    h2 {
-      font-size: 32px;
-      margin: 0 0 22px 0;
-    }
-
     p {
       font-size: 16px;
     }
@@ -246,6 +169,48 @@
     #step3 p {
       font-size: 18px;
       margin: 0 0 14px 0;
+    }
+
+    /* Step 4 - hazard scene */
+    .hazard-step {
+      max-width: 1100px;
+    }
+
+    .hazard-image-wrapper {
+      position: relative;
+      width: 100%;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid #333;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+    }
+
+    .hazard-main-image {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .hazard-hotspot {
+      position: absolute;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+    }
+
+    .hazard-question {
+      font-size: 30px;
+      margin: 18px 0 14px 0;
+    }
+
+    .hazard-answer-box {
+      min-height: 60px;
+      padding: 16px 18px;
+      border-radius: 14px;
+      background: #181818;
+      border: 1px solid #333;
+      font-size: 18px;
+      line-height: 1.45;
     }
   </style>
 </head>
@@ -305,39 +270,35 @@
 
   <!-- Step 4 -->
   <section id="step4" class="step">
-    <div class="step-indicator">Step 4 / 4</div>
-    <h2>Interactive Image</h2>
+    <div class="hazard-step">
+      <div class="hazard-image-wrapper">
+        <img src="question3-scene.png" alt="Hazard scene" class="hazard-main-image">
 
-    <div class="image-hotspot-container">
-      <div class="image-wrapper">
-        <img src="market-scene.png" alt="Scene">
+        <!-- 1. A sign falling off a tent -->
+        <div class="hazard-hotspot"
+             data-answer="A sign falling off a tent"
+             style="top: 23%; left: 30%; width: 16%; height: 40%;"></div>
 
-        <div class="hotspot" data-title="Info tent staff"
-             data-description="The info tent staff help visitors with directions, safety information and emergency procedures."
-             style="top: 20%; left: 15%; width: 20%; height: 30%;"></div>
+        <!-- 2. A car blocking a fire exit -->
+        <div class="hazard-hotspot"
+             data-answer="A car blocking a fire exit"
+             style="top: 14%; left: 46%; width: 40%; height: 38%;"></div>
 
-        <div class="hotspot" data-title="Market stall vendor"
-             data-description="The market stall vendor sells fresh produce."
-             style="top: 18%; left: 60%; width: 20%; height: 28%;"></div>
+        <!-- 3. A pile of rubbish -->
+        <div class="hazard-hotspot"
+             data-answer="A pile of rubbish"
+             style="top: 58%; left: 32%; width: 47%; height: 35%;"></div>
 
-        <div class="hotspot" data-title="Catering stall worker"
-             data-description="Catering stalls involve cooking and open flames."
-             style="top: 59%; left: 73%; width: 11%; height: 28%;"></div>
-
-        <div class="hotspot" data-title="Water bottle"
-             data-description="Staying hydrated is important."
-             style="top: 48%; left: 45%; width: 10%; height: 28%;"></div>
-
-        <div class="hotspot" data-title="Fire extinguisher"
-             data-description="Every catering stall should have a fire extinguisher."
-             style="top: 58%; left: 61%; width: 5%; height: 26%;"></div>
-
-        <div id="magnifier"></div>
+        <!-- 4. A person without a hi-vis on -->
+        <div class="hazard-hotspot"
+             data-answer="A person without a hi-vis on"
+             style="top: 46%; left: 84%; width: 11%; height: 28%;"></div>
       </div>
 
-      <div class="hotspot-info" id="hotspotInfo">
-        <div class="hotspot-info-title">Hint</div>
-        Click on the hotspots.
+      <h3 class="hazard-question">What hazards could you find on this photo?</h3>
+
+      <div class="hazard-answer-box" id="hazardAnswerBox">
+        Click on a hazard in the image to reveal the answer.
       </div>
     </div>
   </section>
@@ -521,33 +482,13 @@ document.getElementById("checkQ2").onclick = () => {
   handleQuizCheck("quiz2", cardQ2);
 };
 
-const image = document.querySelector("#step4 img");
-const magnifier = document.getElementById("magnifier");
-const hotspotInfo = document.getElementById("hotspotInfo");
+const hazardAnswerBox = document.getElementById("hazardAnswerBox");
 
 document.addEventListener("click", ev => {
-  const hs = ev.target.closest(".hotspot");
+  const hs = ev.target.closest(".hazard-hotspot");
   if (!hs) return;
 
-  hotspotInfo.innerHTML = `
-    <div class="hotspot-info-title">${hs.dataset.title}</div>
-    ${hs.dataset.description}
-  `;
-
-  const rect = image.getBoundingClientRect();
-  const zoom = 2.2;
-  const lens = 140;
-
-  const x = ev.clientX - rect.left;
-  const y = ev.clientY - rect.top;
-
-  magnifier.style.display = "block";
-  magnifier.style.left = (x - lens / 2) + "px";
-  magnifier.style.top = (y - lens / 2) + "px";
-
-  magnifier.style.backgroundImage = `url(${image.src})`;
-  magnifier.style.backgroundSize = `${rect.width * zoom}px ${rect.height * zoom}px`;
-  magnifier.style.backgroundPosition = `${-(x * zoom - lens / 2)}px ${-(y * zoom - lens / 2)}px`;
+  hazardAnswerBox.textContent = hs.dataset.answer;
 });
 </script>
 
