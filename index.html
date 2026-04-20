@@ -112,7 +112,7 @@
       margin-top: 0;
       min-height: 24px;
       font-size: 16px;
-      line-height: 1.35;
+      line-height: 1.5;
     }
 
     .message.correct {
@@ -300,11 +300,11 @@
     <div id="cardQ1" class="quiz-card">
       <img id="q1MainImage" class="quiz-image" src="question1.png" alt="Question 1 image">
 
-      <h3>Where are the fire extinguishers?</h3>
+      <h3>The bin is on fire. Where should you find the nearest fire extinguisher?</h3>
 
-      <label class="quiz-option"><input type="radio" name="quiz1" value="A"> A. Catering stalls</label>
-      <label class="quiz-option"><input type="radio" name="quiz1" value="B"> B. Info tent</label>
-      <label class="quiz-option"><input type="radio" name="quiz1" value="C"> C. Market stalls</label>
+      <label class="quiz-option"><input type="radio" name="quiz1" value="A"> A. At the information desk</label>
+      <label class="quiz-option"><input type="radio" name="quiz1" value="B"> B. At the nearest food stalls</label>
+      <label class="quiz-option"><input type="radio" name="quiz1" value="C"> C. At the market stalls</label>
 
       <button class="btn" id="checkQ1">Check Answer</button>
       <div class="message" id="msgQ1"></div>
@@ -387,7 +387,7 @@
 <script>
 let player1, player2;
 
-const VIDEO_1_ID = "rR9HqxVLosw";
+const VIDEO_1_ID = "b6ZODrjBjOM";
 const VIDEO_2_ID = "PQV71INDaqY";
 
 const resetTimers = {
@@ -462,10 +462,10 @@ const quizConfig = {
     mainImageId: "q1MainImage",
     checkButtonId: "checkQ1",
     messageId: "msgQ1",
-    correct: "A",
+    correct: "B",
     options: {
-      A: { src: "catering-stall.png", alt: "Catering stalls" },
-      B: { src: "info-tent.png", alt: "Info tent" },
+      A: { src: "information-desk.png", alt: "Information desk" },
+      B: { src: "food-stalls.png", alt: "Nearest food stalls" },
       C: { src: "market-stalls.png", alt: "Market stalls" }
     }
   },
@@ -521,7 +521,16 @@ function handleQuizCheck(quizKey, cardElement) {
   fadeSwapImage(mainImage, choice.src, choice.alt);
 
   if (selected.value === config.correct) {
-    msg.textContent = "Correct!";
+    if (quizKey === "quiz1") {
+      msg.innerHTML = `
+        <strong>Correct.</strong> Every food stall at an event site is required to have a fire extinguisher on hand.<br><br>
+        Because catering involves heat, flames and cooking equipment, it's one of the highest-risk
+        areas on any event site – so it's also one of the first places you'll find the right equipment.
+      `;
+    } else {
+      msg.textContent = "Correct!";
+    }
+
     msg.className = "message correct";
     lockQuiz(quizKey, true);
 
@@ -532,7 +541,7 @@ function handleQuizCheck(quizKey, cardElement) {
         showStep(3);
         player2.playVideo();
       }
-    }, 3000);
+    }, quizKey === "quiz1" ? 6000 : 3000);
 
     return;
   }
