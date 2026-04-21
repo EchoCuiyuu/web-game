@@ -340,36 +340,78 @@
       <h3 class="hazard-question">What hazards could you find on this photo?</h3>
 
       <div class="hazard-image-wrapper">
-        <img src="question3-scene.png" alt="Hazard scene" class="hazard-main-image">
+        <img src="Final Question 4.png" alt="Hazard scene" class="hazard-main-image">
 
-        <!-- 1. A sign falling off a tent -->
+        <!-- 1. A festival light hanging down over a pathway -->
         <div class="hazard-hotspot"
-             data-id="tent-sign"
-             data-answer="A sign falling off a tent"
-             style="top: 23%; left: 29%; width: 17%; height: 40%;"></div>
+             data-id="festival-light"
+             data-answer="A festival light hanging down over a pathway"
+             style="top: 47%; left: 1%; width: 23%; height: 29%;"></div>
 
-        <!-- 2. A car blocking a fire exit -->
+        <!-- 2. Boxes stacked up near a food stall entrance -->
+        <div class="hazard-hotspot"
+             data-id="boxes-stall"
+             data-answer="Boxes stacked up near a food stall entrance"
+             style="top: 48%; left: 18%; width: 10%; height: 21%;"></div>
+
+        <!-- 3. A generator positioned too close to a public area -->
+        <div class="hazard-hotspot"
+             data-id="generator-public"
+             data-answer="A generator positioned too close to a public area"
+             style="top: 63%; left: 27%; width: 11%; height: 11%;"></div>
+
+        <!-- 4. A petrol can left next to a generator -->
+        <div class="hazard-hotspot"
+             data-id="petrol-can"
+             data-answer="A petrol can left next to a generator"
+             style="top: 71%; left: 33%; width: 5%; height: 8%;"></div>
+
+        <!-- 5. A trailing cable across a pedestrian walkway -->
+        <div class="hazard-hotspot"
+             data-id="trailing-cable"
+             data-answer="A trailing cable across a pedestrian walkway"
+             style="top: 67%; left: 29%; width: 24%; height: 24%;"></div>
+
+        <!-- 6. A sign coming loose from a tent -->
+        <div class="hazard-hotspot"
+             data-id="loose-sign"
+             data-answer="A sign coming loose from a tent"
+             style="top: 41%; left: 46%; width: 12%; height: 20%;"></div>
+
+        <!-- 7. A first aid point that is blocked or difficult to access -->
+        <div class="hazard-hotspot"
+             data-id="blocked-first-aid"
+             data-answer="A first aid point that is blocked or difficult to access"
+             style="top: 18%; left: 52%; width: 11%; height: 25%;"></div>
+
+        <!-- 8. Crowd congestion at a single entry and exit point -->
+        <div class="hazard-hotspot"
+             data-id="crowd-congestion"
+             data-answer="Crowd congestion at a single entry and exit point"
+             style="top: 13%; left: 59%; width: 9%; height: 19%;"></div>
+
+        <!-- 9. A car blocking a fire exit -->
         <div class="hazard-hotspot"
              data-id="fire-exit-car"
              data-answer="A car blocking a fire exit"
-             style="top: 14%; left: 45%; width: 41%; height: 39%;"></div>
+             style="top: 22%; left: 62%; width: 31%; height: 33%;"></div>
 
-        <!-- 3. A pile of rubbish -->
+        <!-- 10. A pile of rubbish left unattended -->
         <div class="hazard-hotspot"
              data-id="rubbish-pile"
-             data-answer="A pile of rubbish"
-             style="top: 58%; left: 31%; width: 48%; height: 35%;"></div>
+             data-answer="A pile of rubbish left unattended"
+             style="top: 61%; left: 62%; width: 31%; height: 31%;"></div>
 
-        <!-- 4. A person without a hi-vis on -->
+        <!-- 11. A team member not wearing a hi-vis jacket -->
         <div class="hazard-hotspot"
              data-id="no-hi-vis"
-             data-answer="A person without a hi-vis on"
-             style="top: 46%; left: 84%; width: 11%; height: 28%;"></div>
+             data-answer="A team member not wearing a hi-vis jacket"
+             style="top: 44%; left: 87%; width: 11%; height: 30%;"></div>
       </div>
 
       <div class="hazard-found-bar">
         <div class="hazard-found-top">
-          <div class="hazard-progress">Found: <span id="hazardFoundCount">0</span> / 4</div>
+          <div class="hazard-progress">Found: <span id="hazardFoundCount">0</span> / 11</div>
           <div class="hazard-helper">Click on the image to find the hazards.</div>
         </div>
 
@@ -593,10 +635,17 @@ const hazardEmptyState = document.getElementById("hazardEmptyState");
 
 const foundHazards = new Set();
 const hazardOrder = [
-  { id: "tent-sign", text: "A sign falling off a tent" },
+  { id: "festival-light", text: "A festival light hanging down over a pathway" },
+  { id: "boxes-stall", text: "Boxes stacked up near a food stall entrance" },
+  { id: "generator-public", text: "A generator positioned too close to a public area" },
+  { id: "petrol-can", text: "A petrol can left next to a generator" },
+  { id: "trailing-cable", text: "A trailing cable across a pedestrian walkway" },
+  { id: "loose-sign", text: "A sign coming loose from a tent" },
+  { id: "blocked-first-aid", text: "A first aid point that is blocked or difficult to access" },
+  { id: "crowd-congestion", text: "Crowd congestion at a single entry and exit point" },
   { id: "fire-exit-car", text: "A car blocking a fire exit" },
-  { id: "rubbish-pile", text: "A pile of rubbish" },
-  { id: "no-hi-vis", text: "A person without a hi-vis on" }
+  { id: "rubbish-pile", text: "A pile of rubbish left unattended" },
+  { id: "no-hi-vis", text: "A team member not wearing a hi-vis jacket" }
 ];
 
 function renderHazardTags() {
