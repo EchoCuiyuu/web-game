@@ -117,7 +117,7 @@
       margin-top: 0;
       min-height: 24px;
       font-size: 16px;
-      line-height: 1.35;
+      line-height: 1.5;
     }
 
     .message.correct {
@@ -328,13 +328,29 @@
 
       <!-- Q2 -->
       <div id="cardQ2" class="quiz-card" style="display:none;">
-        <img id="q2MainImage" class="quiz-image" src="question2.png" alt="Question 2 image">
+        <img id="q2MainImage" class="quiz-image" src="Question2.png" alt="Question 2 image">
 
-        <h3>Which one is needed?</h3>
+        <h3>The bin is on fire. What should you do first?</h3>
 
-        <label class="quiz-option"><input type="radio" name="quiz2" value="A"> Water</label>
-        <label class="quiz-option"><input type="radio" name="quiz2" value="B"> CO₂</label>
-        <label class="quiz-option"><input type="radio" name="quiz2" value="C"> Foam</label>
+        <label class="quiz-option">
+          <input type="radio" name="quiz2" value="A">
+          A. Attempt to put it out yourself immediately
+        </label>
+
+        <label class="quiz-option">
+          <input type="radio" name="quiz2" value="B">
+          B. Alert others nearby, call for assistance and find the nearest extinguisher
+        </label>
+
+        <label class="quiz-option">
+          <input type="radio" name="quiz2" value="C">
+          C. Wait to see if it goes out on its own
+        </label>
+
+        <label class="quiz-option">
+          <input type="radio" name="quiz2" value="D">
+          D. Grab the nearest extinguisher without checking the type
+        </label>
 
         <button class="btn" id="checkQ2">Check Answer</button>
         <div class="message" id="msgQ2"></div>
@@ -532,23 +548,71 @@
         checkButtonId: "checkQ1",
         messageId: "msgQ1",
         correct: "B",
+        successDelay: 6000,
+        retryDelay: 3000,
         options: {
           A: { src: "info-tent.png", alt: "Information desk" },
           B: { src: "catering-stall.png", alt: "Nearest food stalls" },
           C: { src: "market-stalls.png", alt: "Market stalls" }
+        },
+        feedback: {
+          correct: `
+            <strong>Correct.</strong> Every food stall at an event site is required to have a fire extinguisher on hand.<br><br>
+            Because catering involves heat, flames and cooking equipment, it's one of the highest-risk
+            areas on any event site – so it's also one of the first places you'll find the right equipment.
+          `
         }
       },
+
       quiz2: {
-        questionSrc: "question2.png",
+        questionSrc: "Question2.png",
         questionAlt: "Question 2 image",
         mainImageId: "q2MainImage",
         checkButtonId: "checkQ2",
         messageId: "msgQ2",
-        correct: "A",
+        correct: "B",
+        successDelay: 8000,
+        retryDelay: 10000,
         options: {
-          A: { src: "water.png", alt: "Water" },
-          B: { src: "co2.png", alt: "CO2" },
-          C: { src: "foam.png", alt: "Foam" }
+          A: {
+            src: "Attempt to put it out yourself immediately.png",
+            alt: "Attempt to put it out yourself immediately"
+          },
+          B: {
+            src: "Alert others nearby, call for assistance and find the nearest extinguisher.png",
+            alt: "Alert others nearby, call for assistance and find the nearest extinguisher"
+          },
+          C: {
+            src: "Wait to see if it goes out on its own.png",
+            alt: "Wait to see if it goes out on its own"
+          },
+          D: {
+            src: "Grab the nearest extinguisher without checking the type.png",
+            alt: "Grab the nearest extinguisher without checking the type"
+          }
+        },
+        feedback: {
+          correct: `
+            <strong>Correct answer: B</strong><br><br>
+            <strong>Correct.</strong> Always alert others and get assistance before attempting to tackle a fire yourself.
+          `,
+          wrong: {
+            A: `
+              <strong>Correct answer: B</strong><br><br>
+              Not quite. Attempting to tackle a fire alone without alerting anyone first puts you at serious risk. If the fire spreads or you are unable to control it, no one will know to help you or begin evacuating the area. Your safety and the safety of those around you depends on others being informed of the situation.<br><br>
+              Have another go!
+            `,
+            C: `
+              <strong>Correct answer: B</strong><br><br>
+              Not quite. A fire in a rubbish pile at an event site will not extinguish itself. Waiting wastes critical time and allows the fire to spread to nearby structures, equipment or people. Any sign of fire on an event site requires an immediate, active response.<br><br>
+              Try again!
+            `,
+            D: `
+              <strong>Correct answer: B</strong><br><br>
+              Not quite. Using the wrong type of extinguisher can make a fire worse, not better – and acting alone without alerting others means no one is aware of the situation or ready to help. Always make sure that you are using the correct fire extinguisher for the fire.<br><br>
+              Have another go!
+            `
+          }
         }
       }
     };
@@ -591,12 +655,8 @@
       fadeSwapImage(mainImage, choice.src, choice.alt);
 
       if (selected.value === config.correct) {
-        if (quizKey === "quiz1") {
-          msg.innerHTML = `
-            <strong>Correct.</strong> Every food stall at an event site is required to have a fire extinguisher on hand.<br><br>
-            Because catering involves heat, flames and cooking equipment, it's one of the highest-risk
-            areas on any event site – so it's also one of the first places you'll find the right equipment.
-          `;
+        if (config.feedback && config.feedback.correct) {
+          msg.innerHTML = config.feedback.correct;
         } else {
           msg.textContent = "Correct!";
         }
@@ -612,12 +672,17 @@
             showStep(3);
             player2.playVideo();
           }
-        }, quizKey === "quiz1" ? 6000 : 3000);
+        }, config.successDelay || 3000);
 
         return;
       }
 
-      msg.textContent = "Wrong. Try again!";
+      if (config.feedback && config.feedback.wrong && config.feedback.wrong[selected.value]) {
+        msg.innerHTML = config.feedback.wrong[selected.value];
+      } else {
+        msg.textContent = "Wrong. Try again!";
+      }
+
       msg.className = "message wrong";
       nudgeFeedbackIntoView(msg);
       lockQuiz(quizKey, true);
@@ -629,7 +694,7 @@
         setTimeout(() => {
           lockQuiz(quizKey, false);
         }, 180);
-      }, 3000);
+      }, config.retryDelay || 3000);
     }
 
     document.getElementById("checkQ1").onclick = () => {
