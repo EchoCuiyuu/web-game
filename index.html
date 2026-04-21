@@ -541,28 +541,38 @@
     const cardQ2 = document.getElementById("cardQ2");
 
     const quizConfig = {
-      quiz1: {
-        questionSrc: "question1.png",
-        questionAlt: "Question 1 image",
-        mainImageId: "q1MainImage",
-        checkButtonId: "checkQ1",
-        messageId: "msgQ1",
-        correct: "B",
-        successDelay: 6000,
-        retryDelay: 3000,
-        options: {
-          A: { src: "info-tent.png", alt: "Information desk" },
-          B: { src: "catering-stall.png", alt: "Nearest food stalls" },
-          C: { src: "market-stalls.png", alt: "Market stalls" }
-        },
-        feedback: {
-          correct: `
-            <strong>Correct.</strong> Every food stall at an event site is required to have a fire extinguisher on hand.<br><br>
-            Because catering involves heat, flames and cooking equipment, it's one of the highest-risk
-            areas on any event site – so it's also one of the first places you'll find the right equipment.
-          `
-        }
-      },
+quiz1: {
+  questionSrc: "question1.png",
+  questionAlt: "Question 1 image",
+  mainImageId: "q1MainImage",
+  checkButtonId: "checkQ1",
+  messageId: "msgQ1",
+  correct: "B",
+  successDelay: 6000,
+  retryDelay: 6000,
+  options: {
+    A: { src: "info-tent.png", alt: "Information desk" },
+    B: { src: "catering-stall.png", alt: "Nearest food stalls" },
+    C: { src: "market-stalls.png", alt: "Market stalls" }
+  },
+  feedback: {
+    correct: `
+      <strong>Correct.</strong> Every food stall at an event site is required to have a fire extinguisher on hand.<br><br>
+      Because catering involves heat, flames and cooking equipment, it's one of the highest-risk
+      areas on any event site – so it's also one of the first places you'll find the right equipment.
+    `,
+    wrong: {
+      A: `
+        <strong>Not quite.</strong> Information desks are there to help attendees find their way around – they're not designated safety equipment points. In an emergency, heading to the information desk to find a fire extinguisher would cost you valuable time.<br><br>
+        Have another go!
+      `,
+      C: `
+        <strong>Not quite.</strong> While market stalls may occasionally have basic safety provisions, they aren't required to hold fire extinguishers as standard.<br><br>
+        Have another go!
+      `
+    }
+  }
+},
 
       quiz2: {
         questionSrc: "Question2.png",
