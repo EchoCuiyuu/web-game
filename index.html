@@ -26,8 +26,13 @@
       box-sizing: border-box;
     }
 
-    .step { display: none; }
-    .step.active { display: block; }
+    .step {
+      display: none;
+    }
+
+    .step.active {
+      display: block;
+    }
 
     .video-wrapper {
       position: relative;
@@ -74,7 +79,7 @@
       background: #181818;
       border-radius: 16px;
       padding: 18px 22px 20px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.45);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45);
       max-width: 980px;
       min-height: 700px;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -132,13 +137,25 @@
     }
 
     @keyframes slideInRight {
-      from { opacity: 0; transform: translateX(40px); }
-      to   { opacity: 1; transform: translateX(0); }
+      from {
+        opacity: 0;
+        transform: translateX(40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
     }
 
     @keyframes slideOutLeft {
-      from { opacity: 1; transform: translateX(0); }
-      to   { opacity: 0; transform: translateX(-40px); }
+      from {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      to {
+        opacity: 0;
+        transform: translateX(-40px);
+      }
     }
 
     .quiz-card.shake {
@@ -181,7 +198,7 @@
       border-radius: 16px;
       overflow: hidden;
       border: 1px solid #333;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
       background: #181818;
     }
 
@@ -282,410 +299,408 @@
 </head>
 
 <body>
-<div class="app-container">
+  <div class="app-container">
 
-  <!-- Step 1 -->
-  <section id="step1" class="step active">
-    <p>Please watch the video.</p>
+    <!-- Step 1 -->
+    <section id="step1" class="step active">
+      <p>Please watch the video.</p>
+      <div class="video-wrapper">
+        <div id="player1"></div>
+      </div>
+    </section>
 
-    <div class="video-wrapper">
-      <div id="player1"></div>
-    </div>
-  </section>
+    <!-- Step 2 -->
+    <section id="step2" class="step">
 
-  <!-- Step 2 -->
-  <section id="step2" class="step">
+      <!-- Q1 -->
+      <div id="cardQ1" class="quiz-card">
+        <img id="q1MainImage" class="quiz-image" src="question1.png" alt="Question 1 image">
 
-    <!-- Q1 -->
-    <div id="cardQ1" class="quiz-card">
-      <img id="q1MainImage" class="quiz-image" src="question1.png" alt="Question 1 image">
+        <h3>The bin is on fire. Where should you find the nearest fire extinguisher?</h3>
 
-      <h3>The bin is on fire. Where should you find the nearest fire extinguisher?</h3>
+        <label class="quiz-option"><input type="radio" name="quiz1" value="A"> A. At the information desk</label>
+        <label class="quiz-option"><input type="radio" name="quiz1" value="B"> B. At the nearest food stalls</label>
+        <label class="quiz-option"><input type="radio" name="quiz1" value="C"> C. At the market stalls</label>
 
-      <label class="quiz-option"><input type="radio" name="quiz1" value="A"> A. At the information desk</label>
-      <label class="quiz-option"><input type="radio" name="quiz1" value="B"> B. At the nearest food stalls</label>
-      <label class="quiz-option"><input type="radio" name="quiz1" value="C"> C. At the market stalls</label>
-
-      <button class="btn" id="checkQ1">Check Answer</button>
-      <div class="message" id="msgQ1"></div>
-    </div>
-
-    <!-- Q2 -->
-    <div id="cardQ2" class="quiz-card" style="display:none;">
-      <img id="q2MainImage" class="quiz-image" src="question2.png" alt="Question 2 image">
-
-      <h3>Which one is needed?</h3>
-
-      <label class="quiz-option"><input type="radio" name="quiz2" value="A"> Water</label>
-      <label class="quiz-option"><input type="radio" name="quiz2" value="B"> CO₂</label>
-      <label class="quiz-option"><input type="radio" name="quiz2" value="C"> Foam</label>
-
-      <button class="btn" id="checkQ2">Check Answer</button>
-      <div class="message" id="msgQ2"></div>
-    </div>
-  </section>
-
-  <!-- Step 3 -->
-  <section id="step3" class="step">
-    <p>Please watch the video.</p>
-
-    <div class="video-wrapper">
-      <div id="player2"></div>
-    </div>
-  </section>
-
-  <!-- Step 4 -->
-  <section id="step4" class="step">
-    <div class="hazard-step">
-      <h3 class="hazard-question">What hazards could you find on this photo?</h3>
-
-      <div class="hazard-image-wrapper">
-        <img src="Final Question 4.png" alt="Hazard scene" class="hazard-main-image">
-
-        <!-- 1. A festival light hanging down over a pathway -->
-        <div class="hazard-hotspot"
-             data-id="festival-light"
-             data-answer="A festival light hanging down over a pathway"
-             style="top: 47%; left: 1%; width: 23%; height: 29%;"></div>
-
-        <!-- 2. Boxes stacked up near a food stall entrance -->
-        <div class="hazard-hotspot"
-             data-id="boxes-stall"
-             data-answer="Boxes stacked up near a food stall entrance"
-             style="top: 48%; left: 18%; width: 10%; height: 21%;"></div>
-
-        <!-- 3. A generator positioned too close to a public area -->
-        <div class="hazard-hotspot"
-             data-id="generator-public"
-             data-answer="A generator positioned too close to a public area"
-             style="top: 63%; left: 27%; width: 11%; height: 11%;"></div>
-
-        <!-- 4. A petrol can left next to a generator -->
-        <div class="hazard-hotspot"
-             data-id="petrol-can"
-             data-answer="A petrol can left next to a generator"
-             style="top: 71%; left: 33%; width: 5%; height: 8%;"></div>
-
-        <!-- 5. A trailing cable across a pedestrian walkway -->
-        <div class="hazard-hotspot"
-             data-id="trailing-cable"
-             data-answer="A trailing cable across a pedestrian walkway"
-             style="top: 67%; left: 29%; width: 24%; height: 24%;"></div>
-
-        <!-- 6. A sign coming loose from a tent -->
-        <div class="hazard-hotspot"
-             data-id="loose-sign"
-             data-answer="A sign coming loose from a tent"
-             style="top: 41%; left: 46%; width: 12%; height: 20%;"></div>
-
-        <!-- 7. A first aid point that is blocked or difficult to access -->
-        <div class="hazard-hotspot"
-             data-id="blocked-first-aid"
-             data-answer="A first aid point that is blocked or difficult to access"
-             style="top: 18%; left: 52%; width: 11%; height: 25%;"></div>
-
-        <!-- 8. Crowd congestion at a single entry and exit point -->
-        <div class="hazard-hotspot"
-             data-id="crowd-congestion"
-             data-answer="Crowd congestion at a single entry and exit point"
-             style="top: 13%; left: 59%; width: 9%; height: 19%;"></div>
-
-        <!-- 9. A car blocking a fire exit -->
-        <div class="hazard-hotspot"
-             data-id="fire-exit-car"
-             data-answer="A car blocking a fire exit"
-             style="top: 22%; left: 62%; width: 31%; height: 33%;"></div>
-
-        <!-- 10. A pile of rubbish left unattended -->
-        <div class="hazard-hotspot"
-             data-id="rubbish-pile"
-             data-answer="A pile of rubbish left unattended"
-             style="top: 61%; left: 62%; width: 31%; height: 31%;"></div>
-
-        <!-- 11. A team member not wearing a hi-vis jacket -->
-        <div class="hazard-hotspot"
-             data-id="no-hi-vis"
-             data-answer="A team member not wearing a hi-vis jacket"
-             style="top: 44%; left: 87%; width: 11%; height: 30%;"></div>
+        <button class="btn" id="checkQ1">Check Answer</button>
+        <div class="message" id="msgQ1"></div>
       </div>
 
-      <div class="hazard-found-bar">
-        <div class="hazard-found-top">
-          <div class="hazard-progress">Found: <span id="hazardFoundCount">0</span> / 11</div>
-          <div class="hazard-helper">Click on the image to find the hazards.</div>
+      <!-- Q2 -->
+      <div id="cardQ2" class="quiz-card" style="display:none;">
+        <img id="q2MainImage" class="quiz-image" src="question2.png" alt="Question 2 image">
+
+        <h3>Which one is needed?</h3>
+
+        <label class="quiz-option"><input type="radio" name="quiz2" value="A"> Water</label>
+        <label class="quiz-option"><input type="radio" name="quiz2" value="B"> CO₂</label>
+        <label class="quiz-option"><input type="radio" name="quiz2" value="C"> Foam</label>
+
+        <button class="btn" id="checkQ2">Check Answer</button>
+        <div class="message" id="msgQ2"></div>
+      </div>
+    </section>
+
+    <!-- Step 3 -->
+    <section id="step3" class="step">
+      <p>Please watch the video.</p>
+      <div class="video-wrapper">
+        <div id="player2"></div>
+      </div>
+    </section>
+
+    <!-- Step 4 -->
+    <section id="step4" class="step">
+      <div class="hazard-step">
+        <h3 class="hazard-question">What hazards could you find on this photo?</h3>
+
+        <div class="hazard-image-wrapper">
+          <img src="Final Question 4.png" alt="Hazard scene" class="hazard-main-image">
+
+          <!-- 1. A festival light hanging down over a pathway -->
+          <div class="hazard-hotspot"
+               data-id="festival-light"
+               style="top: 42%; left: 1%; width: 15%; height: 35%;"></div>
+
+          <!-- 2. Boxes stacked up near a food stall entrance -->
+          <div class="hazard-hotspot"
+               data-id="boxes-stall"
+               style="top: 46%; left: 15%; width: 11%; height: 22%;"></div>
+
+          <!-- 3. A generator positioned too close to a public area -->
+          <div class="hazard-hotspot"
+               data-id="generator-public"
+               style="top: 67%; left: 24%; width: 10%; height: 11%;"></div>
+
+          <!-- 4. A petrol can left next to a generator -->
+          <div class="hazard-hotspot"
+               data-id="petrol-can"
+               style="top: 69%; left: 30%; width: 4.5%; height: 9%;"></div>
+
+          <!-- 5. A trailing cable across a pedestrian walkway -->
+          <div class="hazard-hotspot"
+               data-id="trailing-cable"
+               style="top: 70%; left: 34%; width: 10%; height: 7%;"></div>
+
+          <div class="hazard-hotspot"
+               data-id="trailing-cable"
+               style="top: 74%; left: 42%; width: 12%; height: 8%;"></div>
+
+          <div class="hazard-hotspot"
+               data-id="trailing-cable"
+               style="top: 78%; left: 51%; width: 8%; height: 7%;"></div>
+
+          <!-- 6. A sign coming loose from a tent -->
+          <div class="hazard-hotspot"
+               data-id="loose-sign"
+               style="top: 41%; left: 48%; width: 11%; height: 20%;"></div>
+
+          <!-- 7. A first aid point that is blocked or difficult to access -->
+          <div class="hazard-hotspot"
+               data-id="blocked-first-aid"
+               style="top: 18%; left: 53%; width: 9%; height: 24%;"></div>
+
+          <!-- 8. Crowd congestion at a single entry and exit point -->
+          <div class="hazard-hotspot"
+               data-id="crowd-congestion"
+               style="top: 16%; left: 60%; width: 6%; height: 18%;"></div>
+
+          <!-- 9. A car blocking a fire exit -->
+          <div class="hazard-hotspot"
+               data-id="fire-exit-car"
+               style="top: 23%; left: 63%; width: 20%; height: 23%;"></div>
+
+          <!-- 10. A pile of rubbish left unattended -->
+          <div class="hazard-hotspot"
+               data-id="rubbish-pile"
+               style="top: 63%; left: 61%; width: 26%; height: 26%;"></div>
+
+          <!-- 11. A team member not wearing a hi-vis jacket -->
+          <div class="hazard-hotspot"
+               data-id="no-hi-vis"
+               style="top: 46%; left: 88%; width: 9%; height: 29%;"></div>
         </div>
 
-        <div class="hazard-tags" id="hazardTags">
-          <div class="hazard-tag-empty" id="hazardEmptyState">No hazards found yet.</div>
+        <div class="hazard-found-bar">
+          <div class="hazard-found-top">
+            <div class="hazard-progress">Found: <span id="hazardFoundCount">0</span> / 11</div>
+            <div class="hazard-helper">Click on the image to find the hazards.</div>
+          </div>
+
+          <div class="hazard-tags" id="hazardTags">
+            <div class="hazard-tag-empty" id="hazardEmptyState">No hazards found yet.</div>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-</div>
+  </div>
 
-<script src="https://www.youtube.com/iframe_api"></script>
+  <script src="https://www.youtube.com/iframe_api"></script>
 
-<script>
-let player1, player2;
+  <script>
+    let player1, player2;
 
-const VIDEO_1_ID = "b6ZODrjBjOM";
-const VIDEO_2_ID = "PQV71INDaqY";
+    const VIDEO_1_ID = "b6ZODrjBjOM";
+    const VIDEO_2_ID = "PQV71INDaqY";
 
-const resetTimers = {
-  quiz1: null,
-  quiz2: null
-};
+    const resetTimers = {
+      quiz1: null,
+      quiz2: null
+    };
 
-function showStep(num) {
-  document.querySelectorAll(".step").forEach((s, i) => {
-    s.classList.toggle("active", i === num - 1);
-  });
-}
-
-function onYouTubeIframeAPIReady() {
-  player1 = new YT.Player("player1", {
-    videoId: VIDEO_1_ID,
-    events: {
-      onStateChange: e => {
-        if (e.data === YT.PlayerState.ENDED) showStep(2);
-      }
-    }
-  });
-
-  player2 = new YT.Player("player2", {
-    videoId: VIDEO_2_ID,
-    events: {
-      onStateChange: e => {
-        if (e.data === YT.PlayerState.ENDED) showStep(4);
-      }
-    }
-  });
-}
-
-function shake(card) {
-  card.classList.remove("shake");
-  void card.offsetWidth;
-  card.classList.add("shake");
-}
-
-function fadeSwapImage(imgElement, newSrc, newAlt) {
-  imgElement.classList.add("is-fading");
-  imgElement.src = newSrc;
-  imgElement.alt = newAlt;
-
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      imgElement.classList.remove("is-fading");
-    });
-  });
-}
-
-function setInputsDisabled(quizName, disabled) {
-  document.querySelectorAll(`input[name="${quizName}"]`).forEach(input => {
-    input.disabled = disabled;
-  });
-}
-
-function clearQuizTimer(quizKey) {
-  if (resetTimers[quizKey]) {
-    clearTimeout(resetTimers[quizKey]);
-    resetTimers[quizKey] = null;
-  }
-}
-
-function nudgeFeedbackIntoView(msgElement) {
-  requestAnimationFrame(() => {
-    const rect = msgElement.getBoundingClientRect();
-    const extraSpace = 40;
-    const overflow = rect.bottom + extraSpace - window.innerHeight;
-
-    if (overflow > 0) {
-      window.scrollBy({
-        top: overflow,
-        behavior: "smooth"
+    function showStep(num) {
+      document.querySelectorAll(".step").forEach((step, i) => {
+        step.classList.toggle("active", i === num - 1);
       });
     }
-  });
-}
 
-const cardQ1 = document.getElementById("cardQ1");
-const cardQ2 = document.getElementById("cardQ2");
+    function onYouTubeIframeAPIReady() {
+      player1 = new YT.Player("player1", {
+        videoId: VIDEO_1_ID,
+        events: {
+          onStateChange: e => {
+            if (e.data === YT.PlayerState.ENDED) showStep(2);
+          }
+        }
+      });
 
-const quizConfig = {
-  quiz1: {
-    questionSrc: "question1.png",
-    questionAlt: "Question 1 image",
-    mainImageId: "q1MainImage",
-    checkButtonId: "checkQ1",
-    messageId: "msgQ1",
-    correct: "B",
-    options: {
-      A: { src: "info-tent.png", alt: "Information desk" },
-      B: { src: "catering-stall.png", alt: "Nearest food stalls" },
-      C: { src: "market-stalls.png", alt: "Market stalls" }
-    }
-  },
-  quiz2: {
-    questionSrc: "question2.png",
-    questionAlt: "Question 2 image",
-    mainImageId: "q2MainImage",
-    checkButtonId: "checkQ2",
-    messageId: "msgQ2",
-    correct: "A",
-    options: {
-      A: { src: "water.png", alt: "Water" },
-      B: { src: "co2.png", alt: "CO2" },
-      C: { src: "foam.png", alt: "Foam" }
-    }
-  }
-};
-
-function lockQuiz(quizKey, locked) {
-  const config = quizConfig[quizKey];
-  document.getElementById(config.checkButtonId).disabled = locked;
-  setInputsDisabled(quizKey, locked);
-}
-
-function goToQuestion2() {
-  cardQ1.classList.remove("slide-in-right");
-  cardQ1.classList.add("slide-out-left");
-
-  setTimeout(() => {
-    cardQ1.style.display = "none";
-    cardQ2.style.display = "block";
-    cardQ2.classList.remove("slide-out-left");
-    cardQ2.classList.add("slide-in-right");
-  }, 500);
-}
-
-function handleQuizCheck(quizKey, cardElement) {
-  const config = quizConfig[quizKey];
-  const selected = document.querySelector(`input[name="${quizKey}"]:checked`);
-  const msg = document.getElementById(config.messageId);
-  const mainImage = document.getElementById(config.mainImageId);
-
-  clearQuizTimer(quizKey);
-
-  if (!selected) {
-    msg.textContent = "Please select an option.";
-    msg.className = "message wrong";
-    shake(cardElement);
-    nudgeFeedbackIntoView(msg);
-    return;
-  }
-
-  const choice = config.options[selected.value];
-  fadeSwapImage(mainImage, choice.src, choice.alt);
-
-  if (selected.value === config.correct) {
-    if (quizKey === "quiz1") {
-      msg.innerHTML = `
-        <strong>Correct.</strong> Every food stall at an event site is required to have a fire extinguisher on hand.<br><br>
-        Because catering involves heat, flames and cooking equipment, it's one of the highest-risk
-        areas on any event site – so it's also one of the first places you'll find the right equipment.
-      `;
-    } else {
-      msg.textContent = "Correct!";
+      player2 = new YT.Player("player2", {
+        videoId: VIDEO_2_ID,
+        events: {
+          onStateChange: e => {
+            if (e.data === YT.PlayerState.ENDED) showStep(4);
+          }
+        }
+      });
     }
 
-    msg.className = "message correct";
-    nudgeFeedbackIntoView(msg);
-    lockQuiz(quizKey, true);
+    function shake(card) {
+      card.classList.remove("shake");
+      void card.offsetWidth;
+      card.classList.add("shake");
+    }
 
-    resetTimers[quizKey] = setTimeout(() => {
-      if (quizKey === "quiz1") {
-        goToQuestion2();
-      } else if (quizKey === "quiz2") {
-        showStep(3);
-        player2.playVideo();
+    function fadeSwapImage(imgElement, newSrc, newAlt) {
+      imgElement.classList.add("is-fading");
+      imgElement.src = newSrc;
+      imgElement.alt = newAlt;
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          imgElement.classList.remove("is-fading");
+        });
+      });
+    }
+
+    function setInputsDisabled(quizName, disabled) {
+      document.querySelectorAll(`input[name="${quizName}"]`).forEach(input => {
+        input.disabled = disabled;
+      });
+    }
+
+    function clearQuizTimer(quizKey) {
+      if (resetTimers[quizKey]) {
+        clearTimeout(resetTimers[quizKey]);
+        resetTimers[quizKey] = null;
       }
-    }, quizKey === "quiz1" ? 6000 : 3000);
+    }
 
-    return;
-  }
+    function nudgeFeedbackIntoView(msgElement) {
+      requestAnimationFrame(() => {
+        const rect = msgElement.getBoundingClientRect();
+        const extraSpace = 40;
+        const overflow = rect.bottom + extraSpace - window.innerHeight;
 
-  msg.textContent = "Wrong. Try again!";
-  msg.className = "message wrong";
-  nudgeFeedbackIntoView(msg);
-  lockQuiz(quizKey, true);
-  shake(cardElement);
+        if (overflow > 0) {
+          window.scrollBy({
+            top: overflow,
+            behavior: "smooth"
+          });
+        }
+      });
+    }
 
-  resetTimers[quizKey] = setTimeout(() => {
-    fadeSwapImage(mainImage, config.questionSrc, config.questionAlt);
+    const cardQ1 = document.getElementById("cardQ1");
+    const cardQ2 = document.getElementById("cardQ2");
 
-    setTimeout(() => {
-      lockQuiz(quizKey, false);
-    }, 180);
-  }, 3000);
-}
+    const quizConfig = {
+      quiz1: {
+        questionSrc: "question1.png",
+        questionAlt: "Question 1 image",
+        mainImageId: "q1MainImage",
+        checkButtonId: "checkQ1",
+        messageId: "msgQ1",
+        correct: "B",
+        options: {
+          A: { src: "info-tent.png", alt: "Information desk" },
+          B: { src: "catering-stall.png", alt: "Nearest food stalls" },
+          C: { src: "market-stalls.png", alt: "Market stalls" }
+        }
+      },
+      quiz2: {
+        questionSrc: "question2.png",
+        questionAlt: "Question 2 image",
+        mainImageId: "q2MainImage",
+        checkButtonId: "checkQ2",
+        messageId: "msgQ2",
+        correct: "A",
+        options: {
+          A: { src: "water.png", alt: "Water" },
+          B: { src: "co2.png", alt: "CO2" },
+          C: { src: "foam.png", alt: "Foam" }
+        }
+      }
+    };
 
-document.getElementById("checkQ1").onclick = () => {
-  handleQuizCheck("quiz1", cardQ1);
-};
+    function lockQuiz(quizKey, locked) {
+      const config = quizConfig[quizKey];
+      document.getElementById(config.checkButtonId).disabled = locked;
+      setInputsDisabled(quizKey, locked);
+    }
 
-document.getElementById("checkQ2").onclick = () => {
-  handleQuizCheck("quiz2", cardQ2);
-};
+    function goToQuestion2() {
+      cardQ1.classList.remove("slide-in-right");
+      cardQ1.classList.add("slide-out-left");
 
-/* Step 4 */
-const hazardFoundCount = document.getElementById("hazardFoundCount");
-const hazardTags = document.getElementById("hazardTags");
-const hazardEmptyState = document.getElementById("hazardEmptyState");
+      setTimeout(() => {
+        cardQ1.style.display = "none";
+        cardQ2.style.display = "block";
+        cardQ2.classList.remove("slide-out-left");
+        cardQ2.classList.add("slide-in-right");
+      }, 500);
+    }
 
-const foundHazards = new Set();
-const hazardOrder = [
-  { id: "festival-light", text: "A festival light hanging down over a pathway" },
-  { id: "boxes-stall", text: "Boxes stacked up near a food stall entrance" },
-  { id: "generator-public", text: "A generator positioned too close to a public area" },
-  { id: "petrol-can", text: "A petrol can left next to a generator" },
-  { id: "trailing-cable", text: "A trailing cable across a pedestrian walkway" },
-  { id: "loose-sign", text: "A sign coming loose from a tent" },
-  { id: "blocked-first-aid", text: "A first aid point that is blocked or difficult to access" },
-  { id: "crowd-congestion", text: "Crowd congestion at a single entry and exit point" },
-  { id: "fire-exit-car", text: "A car blocking a fire exit" },
-  { id: "rubbish-pile", text: "A pile of rubbish left unattended" },
-  { id: "no-hi-vis", text: "A team member not wearing a hi-vis jacket" }
-];
+    function handleQuizCheck(quizKey, cardElement) {
+      const config = quizConfig[quizKey];
+      const selected = document.querySelector(`input[name="${quizKey}"]:checked`);
+      const msg = document.getElementById(config.messageId);
+      const mainImage = document.getElementById(config.mainImageId);
 
-function renderHazardTags() {
-  const foundItems = hazardOrder.filter(item => foundHazards.has(item.id));
+      clearQuizTimer(quizKey);
 
-  hazardFoundCount.textContent = foundItems.length;
-  hazardTags.innerHTML = "";
+      if (!selected) {
+        msg.textContent = "Please select an option.";
+        msg.className = "message wrong";
+        shake(cardElement);
+        nudgeFeedbackIntoView(msg);
+        return;
+      }
 
-  if (foundItems.length === 0) {
-    hazardTags.appendChild(hazardEmptyState);
-    return;
-  }
+      const choice = config.options[selected.value];
+      fadeSwapImage(mainImage, choice.src, choice.alt);
 
-  foundItems.forEach(item => {
-    const tag = document.createElement("div");
-    tag.className = "hazard-tag";
-    tag.textContent = item.text;
-    hazardTags.appendChild(tag);
-  });
-}
+      if (selected.value === config.correct) {
+        if (quizKey === "quiz1") {
+          msg.innerHTML = `
+            <strong>Correct.</strong> Every food stall at an event site is required to have a fire extinguisher on hand.<br><br>
+            Because catering involves heat, flames and cooking equipment, it's one of the highest-risk
+            areas on any event site – so it's also one of the first places you'll find the right equipment.
+          `;
+        } else {
+          msg.textContent = "Correct!";
+        }
 
-function flashFoundHotspot(hotspot) {
-  hotspot.classList.remove("found-flash");
-  void hotspot.offsetWidth;
-  hotspot.classList.add("found-flash");
-}
+        msg.className = "message correct";
+        nudgeFeedbackIntoView(msg);
+        lockQuiz(quizKey, true);
 
-document.addEventListener("click", ev => {
-  const hs = ev.target.closest(".hazard-hotspot");
-  if (!hs) return;
+        resetTimers[quizKey] = setTimeout(() => {
+          if (quizKey === "quiz1") {
+            goToQuestion2();
+          } else if (quizKey === "quiz2") {
+            showStep(3);
+            player2.playVideo();
+          }
+        }, quizKey === "quiz1" ? 6000 : 3000);
 
-  const hazardId = hs.dataset.id;
+        return;
+      }
 
-  if (!foundHazards.has(hazardId)) {
-    foundHazards.add(hazardId);
-    flashFoundHotspot(hs);
-    renderHazardTags();
-  }
-});
-</script>
+      msg.textContent = "Wrong. Try again!";
+      msg.className = "message wrong";
+      nudgeFeedbackIntoView(msg);
+      lockQuiz(quizKey, true);
+      shake(cardElement);
 
+      resetTimers[quizKey] = setTimeout(() => {
+        fadeSwapImage(mainImage, config.questionSrc, config.questionAlt);
+
+        setTimeout(() => {
+          lockQuiz(quizKey, false);
+        }, 180);
+      }, 3000);
+    }
+
+    document.getElementById("checkQ1").onclick = () => {
+      handleQuizCheck("quiz1", cardQ1);
+    };
+
+    document.getElementById("checkQ2").onclick = () => {
+      handleQuizCheck("quiz2", cardQ2);
+    };
+
+    /* Step 4 */
+    const hazardFoundCount = document.getElementById("hazardFoundCount");
+    const hazardTags = document.getElementById("hazardTags");
+    const hazardEmptyState = document.getElementById("hazardEmptyState");
+
+    const foundHazards = new Set();
+    const foundHazardsInOrder = [];
+
+    const hazardOrder = [
+      { id: "festival-light", text: "A festival light hanging down over a pathway" },
+      { id: "boxes-stall", text: "Boxes stacked up near a food stall entrance" },
+      { id: "generator-public", text: "A generator positioned too close to a public area" },
+      { id: "petrol-can", text: "A petrol can left next to a generator" },
+      { id: "trailing-cable", text: "A trailing cable across a pedestrian walkway" },
+      { id: "loose-sign", text: "A sign coming loose from a tent" },
+      { id: "blocked-first-aid", text: "A first aid point that is blocked or difficult to access" },
+      { id: "crowd-congestion", text: "Crowd congestion at a single entry and exit point" },
+      { id: "fire-exit-car", text: "A car blocking a fire exit" },
+      { id: "rubbish-pile", text: "A pile of rubbish left unattended" },
+      { id: "no-hi-vis", text: "A team member not wearing a hi-vis jacket" }
+    ];
+
+    function renderHazardTags() {
+      hazardFoundCount.textContent = foundHazardsInOrder.length;
+      hazardTags.innerHTML = "";
+
+      if (foundHazardsInOrder.length === 0) {
+        hazardTags.appendChild(hazardEmptyState);
+        return;
+      }
+
+      foundHazardsInOrder.forEach(hazardId => {
+        const item = hazardOrder.find(h => h.id === hazardId);
+        if (!item) return;
+
+        const tag = document.createElement("div");
+        tag.className = "hazard-tag";
+        tag.textContent = item.text;
+        hazardTags.appendChild(tag);
+      });
+    }
+
+    function flashFoundHotspot(hotspot) {
+      hotspot.classList.remove("found-flash");
+      void hotspot.offsetWidth;
+      hotspot.classList.add("found-flash");
+    }
+
+    document.addEventListener("click", ev => {
+      const hs = ev.target.closest(".hazard-hotspot");
+      if (!hs) return;
+
+      const hazardId = hs.dataset.id;
+
+      if (!foundHazards.has(hazardId)) {
+        foundHazards.add(hazardId);
+        foundHazardsInOrder.push(hazardId);
+        flashFoundHotspot(hs);
+        renderHazardTags();
+      }
+    });
+  </script>
 </body>
 </html>
