@@ -300,6 +300,46 @@
       color: #c9c9c9;
     }
 
+    .hazard-hint-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px 14px;
+      margin-bottom: 10px;
+      min-height: 22px;
+    }
+
+    .hazard-hint-text {
+      font-size: 14px;
+      line-height: 1.4;
+      color: #d8d8d8;
+      min-height: 20px;
+    }
+
+    .hazard-hotspot.hint-pulse {
+      animation: hintPulse 1.2s ease 2;
+    }
+
+    @keyframes hintPulse {
+      0% {
+        background: rgba(255, 210, 120, 0);
+        box-shadow: 0 0 0 rgba(255, 210, 120, 0);
+      }
+      35% {
+        background: rgba(255, 210, 120, 0.18);
+        box-shadow: 0 0 0 2px rgba(255, 210, 120, 0.65) inset;
+      }
+      100% {
+        background: rgba(255, 210, 120, 0);
+        box-shadow: 0 0 0 rgba(255, 210, 120, 0);
+      }
+    }
+
+    .hazard-hotspot.hint-outline {
+      background: rgba(255, 170, 190, 0.10);
+      box-shadow: 0 0 0 3px rgba(255, 150, 180, 0.95) inset;
+    }
+
     .hazard-tags {
       display: flex;
       flex-wrap: wrap;
@@ -533,6 +573,10 @@
             <div class="hazard-helper">Click on the image to find the hazards.</div>
           </div>
 
+          <div class="hazard-hint-row">
+            <div class="hazard-hint-text" id="step4HintText"></div>
+          </div>
+
           <div class="hazard-tags" id="hazardTags">
             <div class="hazard-tag-empty" id="hazardEmptyState">No hazards found yet.</div>
           </div>
@@ -607,7 +651,10 @@
         videoId: VIDEO_2_ID,
         events: {
           onStateChange: e => {
-            if (e.data === YT.PlayerState.ENDED) showStep(4);
+            if (e.data === YT.PlayerState.ENDED) {
+              showStep(4);
+              initStep4Hints();
+            }
           }
         }
       });
@@ -900,9 +947,17 @@
     const hazardFoundCount = document.getElementById("hazardFoundCount");
     const hazardTags = document.getElementById("hazardTags");
     const hazardEmptyState = document.getElementById("hazardEmptyState");
+    const step4HintText = document.getElementById("step4HintText");
 
     const foundHazards = new Set();
     const foundHazardsInOrder = [];
+
+    const STEP4_PULSE_DELAY = 15000;
+    const STEP4_OUTLINE_DELAY = 10000;
+
+    let step4PulseTimer = null;
+    let step4OutlineTimer = null;
+    let step4HintTargetId = null;
 
     const hazardOrder = [
       { id: "festival-light", text: "A festival light hanging down over a pathway" },
@@ -944,6 +999,85 @@
       hotspot.classList.add("found-flash");
     }
 
+    function clearStep4HintTimers() {
+      if (step4PulseTimer) {
+        clearTimeout(step4PulseTimer);
+        step4PulseTimer = null;
+      }
+
+      if (step4OutlineTimer) {
+        clearTimeout(step4OutlineTimer);
+        step4OutlineTimer = null;
+      }
+    }
+
+    function getNextUnfoundHazardId() {
+      const nextItem = hazardOrder.find(item => !foundHazards.has(item.id));
+      return nextItem ? nextItem.id : null;
+    }
+
+    function getHintHotspotsById(hazardId) {
+      return Array.from(document.querySelectorAll(`.hazard-hotspot[data-id="${hazardId}"]`));
+    }
+
+    function pulseHintHotspots(hazardId) {
+      const hotspots = getHintHotspotsById(hazardId);
+      hotspots.forEach(hotspot => {
+        hotspot.classList.remove("hint-pulse");
+        void hotspot.offsetWidth;
+        hotspot.classList.add("hint-pulse");
+      });
+    }
+
+    function revealHintOutline(hazardId) {
+      const hotspots = getHintHotspotsById(hazardId);
+      hotspots.forEach(hotspot => {
+        hotspot.classList.add("hint-outline");
+      });
+
+      setTimeout(() => {
+        hotspots.forEach(hotspot => {
+          hotspot.classList.remove("hint-outline");
+        });
+      }, 1200);
+    }
+
+    function scheduleStep4AutoHints() {
+      clearStep4HintTimers();
+
+      if (foundHazards.size >= hazardOrder.length) {
+        step4HintText.textContent = "";
+        return;
+      }
+
+      step4HintText.textContent = "";
+      step4HintTargetId = getNextUnfoundHazardId();
+
+      if (!step4HintTargetId) return;
+
+      step4PulseTimer = setTimeout(() => {
+        if (foundHazards.has(step4HintTargetId)) return;
+
+        pulseHintHotspots(step4HintTargetId);
+        step4HintText.textContent = "Need a nudge? One area has been highlighted.";
+
+        step4OutlineTimer = setTimeout(() => {
+          if (foundHazards.has(step4HintTargetId)) return;
+
+          revealHintOutline(step4HintTargetId);
+          step4HintText.textContent = "Still stuck? A hazard outline has been briefly revealed.";
+        }, STEP4_OUTLINE_DELAY);
+
+      }, STEP4_PULSE_DELAY);
+    }
+
+    function initStep4Hints() {
+      clearStep4HintTimers();
+      step4HintTargetId = null;
+      step4HintText.textContent = "";
+      scheduleStep4AutoHints();
+    }
+
     document.addEventListener("click", ev => {
       const hs = ev.target.closest(".hazard-hotspot");
       if (!hs) return;
@@ -955,6 +1089,10 @@
         foundHazardsInOrder.push(hazardId);
         flashFoundHotspot(hs);
         renderHazardTags();
+
+        step4HintText.textContent = "";
+        step4HintTargetId = null;
+        scheduleStep4AutoHints();
       }
     });
   </script>
